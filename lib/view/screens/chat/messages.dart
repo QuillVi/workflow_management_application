@@ -12,12 +12,12 @@ class _MessagesState extends State<Messages> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: whiteColor,
+      backgroundColor: AppColor.whiteColor,
       appBar: AppBar(
-        backgroundColor: whiteColor,
+        backgroundColor: AppColor.whiteColor,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: blackColor),
+          icon: Icon(Icons.arrow_back, color: AppColor.blackColor),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -33,10 +33,10 @@ class _MessagesState extends State<Messages> {
               children: [
                 Text(
                   'Olivia Anna',
-                  style: TextStyle(color: blackColor),
+                  style: TextStyle(color: AppColor.blackColor),
                 ),
                 Text('Online',
-                    style: TextStyle(fontSize: 12, color: blackColor)),
+                    style: TextStyle(fontSize: 12, color: AppColor.blackColor)),
               ],
             ),
           ],
@@ -45,12 +45,12 @@ class _MessagesState extends State<Messages> {
           IconButton(
             icon: Icon(
               Icons.video_call,
-              color: whiteColor,
+              color: AppColor.whiteColor,
             ),
             onPressed: () {},
           ),
           IconButton(
-            icon: Icon(Icons.call, color: blackColor),
+            icon: Icon(Icons.call, color: AppColor.blackColor),
             onPressed: () {},
           ),
         ],
@@ -92,14 +92,14 @@ class _MessagesState extends State<Messages> {
             child: Row(
               children: [
                 IconButton(
-                  icon: Icon(Icons.menu, color: buleColor),
+                  icon: Icon(Icons.menu, color: AppColor.buleColor),
                   onPressed: () {},
                 ),
                 Expanded(
                   child: TextField(
                     decoration: InputDecoration(
                       filled: true,
-                      fillColor: greyColor,
+                      fillColor: AppColor.greyColor,
                       hintText: 'Type a message',
                       hintStyle: TextStyle(color: Colors.grey[600]),
                       border: OutlineInputBorder(
@@ -110,11 +110,11 @@ class _MessagesState extends State<Messages> {
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.send, color: buleColor),
+                  icon: Icon(Icons.send, color: AppColor.buleColor),
                   onPressed: () {},
                 ),
                 IconButton(
-                  icon: Icon(Icons.mic, color: buleColor),
+                  icon: Icon(Icons.mic, color: AppColor.buleColor),
                   onPressed: () {},
                 ),
               ],
@@ -146,7 +146,7 @@ class ChatBubble extends StatelessWidget {
         margin: EdgeInsets.symmetric(vertical: 5),
         padding: EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: isSender ? Colors.blue : greyColor,
+          color: isSender ? Colors.blue : AppColor.greyColor,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
@@ -155,12 +155,13 @@ class ChatBubble extends StatelessWidget {
           children: [
             Text(
               text,
-              style: TextStyle(color: isSender ? whiteColor : blackColor),
+              style: TextStyle(
+                  color: isSender ? AppColor.whiteColor : AppColor.blackColor),
             ),
             if (isSender && seen)
               Text(
                 'Seen',
-                style: TextStyle(color: whiteColor, fontSize: 10),
+                style: TextStyle(color: AppColor.whiteColor, fontSize: 10),
               ),
           ],
         ),

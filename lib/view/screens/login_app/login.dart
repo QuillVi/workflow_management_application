@@ -23,7 +23,7 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: whiteColor,
+      backgroundColor: AppColor.whiteColor,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -76,7 +76,7 @@ class _LoginState extends State<Login> {
                   // Xử lý khi nhấn nút "Đăng nhập"
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: primaryColor, // Màu nền của nút
+                  backgroundColor: AppColor.primaryColor, // Màu nền của nút
                   padding: EdgeInsets.symmetric(vertical: 15),
                   minimumSize: Size(double.infinity, 50), // Chiều rộng của nút
                   shape: RoundedRectangleBorder(
@@ -85,7 +85,7 @@ class _LoginState extends State<Login> {
                 ),
                 child: Text(
                   'Đăng nhập',
-                  style: TextStyle(fontSize: 16, color: whiteColor),
+                  style: TextStyle(fontSize: 16, color: AppColor.whiteColor),
                 ),
               ),
               SizedBox(height: 20),

@@ -54,19 +54,19 @@ class _ProfileBoardState extends State<ProfileBoard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: whiteColor,
+      backgroundColor: AppColor.whiteColor,
       appBar: AppBar(
-        backgroundColor: whiteColor,
+        backgroundColor: AppColor.whiteColor,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: blackColor),
+          icon: Icon(Icons.arrow_back, color: AppColor.blackColor),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
         title: Text(
           'Profile',
-          style: TextStyle(color: blackColor),
+          style: TextStyle(color: AppColor.blackColor),
         ),
         centerTitle: true,
       ),
@@ -76,14 +76,14 @@ class _ProfileBoardState extends State<ProfileBoard> {
           children: [
             CircleAvatar(
               radius: 50,
-              backgroundColor: whiteColor,
+              backgroundColor: AppColor.whiteColor,
               child: CircleAvatar(
                 radius: 45,
                 backgroundImage: AssetImage('lib/images/user.png'),
               ),
             ),
             IconButton(
-              icon: Icon(Icons.add_circle, color: primaryColor),
+              icon: Icon(Icons.add_circle, color: AppColor.primaryColor),
               onPressed: () {},
             ),
             ProfileInfoCard(
@@ -118,15 +118,15 @@ class _ProfileBoardState extends State<ProfileBoard> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    backgroundColor: primaryColor,
+                    backgroundColor: AppColor.primaryColor,
                   ),
                   icon: Icon(
                     Icons.logout,
-                    color: whiteColor,
+                    color: AppColor.whiteColor,
                   ),
                   label: Text(
                     'Logout',
-                    style: TextStyle(fontSize: 18, color: whiteColor),
+                    style: TextStyle(fontSize: 18, color: AppColor.whiteColor),
                   ),
                 ),
               ),
@@ -158,20 +158,21 @@ class ProfileInfoCard extends StatelessWidget {
       margin: EdgeInsets.symmetric(vertical: 8),
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: whiteColor,
+        color: AppColor.whiteColor,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         children: [
-          Icon(icon, color: blackColor, size: 30),
+          Icon(icon, color: AppColor.blackColor, size: 30),
           SizedBox(width: 16),
           Expanded(
             child: Text(
               label,
-              style: TextStyle(color: blackColor, fontSize: 18),
+              style: TextStyle(color: AppColor.blackColor, fontSize: 18),
             ),
           ),
-          if (isEditable) Icon(Icons.edit, color: blackColor, size: 20),
+          if (isEditable)
+            Icon(Icons.edit, color: AppColor.blackColor, size: 20),
         ],
       ),
     );

@@ -37,6 +37,8 @@ dependencies:
   http: ^1.2.2
   get: ^4.6.6
   shared_preferences: ^2.0.18
+  dropdown_button2: ^2.0.0
+  simple_ripple_animation: ^0.0.9
 
 dev_dependencies:
   flutter_test:

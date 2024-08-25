@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:simple_ripple_animation/simple_ripple_animation.dart';
 import 'package:work_flow/themes/primarycolor.dart';
 import 'package:work_flow/view/screens/create_task/create_task.dart';
 
@@ -25,10 +26,6 @@ class _MyTaskDashBoardState extends State<MyTaskDashBoard>
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {},
-        ),
         title: const Text(
           'Task',
           style: TextStyle(color: Colors.black),
@@ -37,10 +34,10 @@ class _MyTaskDashBoardState extends State<MyTaskDashBoard>
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(48),
           child: Container(
-            color: greyColor,
+            color: AppColor.greyColor,
             child: TabBar(
               controller: _tabController,
-              indicatorColor: yellowColor,
+              indicatorColor: AppColor.yellowColor,
               tabs: const [
                 Tab(text: 'Tuần này'),
                 Tab(text: 'Của tôi'),
@@ -75,8 +72,8 @@ class _MyTaskDashBoardState extends State<MyTaskDashBoard>
               alignment: Alignment.centerLeft,
               child: Text(
                 '2 To Do',
-                style:
-                    TextStyle(color: blackColor, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: AppColor.blackColor, fontWeight: FontWeight.bold),
               ),
             ),
           ),
@@ -88,7 +85,7 @@ class _MyTaskDashBoardState extends State<MyTaskDashBoard>
                   title: 'Refresh Data Màn hình danh sách Telesales',
                   date: '04-08/06-08',
                   priority: 'High',
-                  letterColor: redColor,
+                  letterColor: AppColor.redColor,
                   priorityColor: Colors.red.shade100,
                   taskNumber: '[222]',
                   appName: 'MICXM/FieldSale App',
@@ -97,7 +94,7 @@ class _MyTaskDashBoardState extends State<MyTaskDashBoard>
                   title: 'Tạo phân hệ User',
                   date: '04-08/06-08',
                   priority: 'Low',
-                  letterColor: greenColor,
+                  letterColor: AppColor.greenColor,
                   priorityColor: Colors.green.shade100,
                   taskNumber: '[113]',
                   appName: 'MICXM/FieldSale App',
@@ -107,14 +104,22 @@ class _MyTaskDashBoardState extends State<MyTaskDashBoard>
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (_) => const CreateTask()));
-        },
-        child: const Icon(Icons.add),
-        backgroundColor: whiteColor,
-        shape: CircleBorder(side: BorderSide(color: whiteColor)),
+      floatingActionButton: RippleAnimation(
+        color: Color.fromARGB(255, 129, 164, 125),
+        delay: const Duration(milliseconds: 500),
+        repeat: true,
+        minRadius: 25,
+        ripplesCount: 5,
+        duration: const Duration(seconds: 3),
+        child: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (_) => const CreateTask()));
+          },
+          child: const Icon(Icons.add),
+          backgroundColor: AppColor.whiteColor,
+          shape: CircleBorder(side: BorderSide(color: AppColor.whiteColor)),
+        ),
       ),
     );
   }
@@ -237,7 +242,8 @@ class TaskCard extends StatelessWidget {
                     Text(
                       '3+',
                       style: TextStyle(
-                          color: primaryColor, fontWeight: FontWeight.bold),
+                          color: AppColor.primaryColor,
+                          fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),

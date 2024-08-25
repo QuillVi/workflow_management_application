@@ -49,7 +49,7 @@ class _MybottomnavigationbarState extends State<Mybottomnavigationbar> {
           BottomNavigationBarItem(
             icon: Icon(
               Icons.add_circle_outlined,
-              color: primaryColor,
+              color: AppColor.primaryColor,
               size: 40,
             ),
             label: '',
@@ -63,8 +63,8 @@ class _MybottomnavigationbarState extends State<Mybottomnavigationbar> {
             label: 'Profile',
           ),
         ],
-        selectedItemColor: primaryColor,
-        unselectedItemColor: blackColor,
+        selectedItemColor: AppColor.primaryColor,
+        unselectedItemColor: AppColor.blackColor,
         type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,

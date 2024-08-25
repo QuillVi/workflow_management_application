@@ -49,6 +49,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.8"
+  dropdown_button2:
+    dependency: "direct main"
+    description:
+      name: dropdown_button2
+      sha256: b0fe8d49a030315e9eef6c7ac84ca964250155a6224d491c1365061bc974a9e1
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.9"
   fake_async:
     dependency: transitive
     description:
@@ -120,6 +128,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.2"
+  hyper_lint:
+    dependency: transitive
+    description:
+      name: hyper_lint
+      sha256: "6d214b6e6e38d15f087ed9b67d461d026c9cdebb64c7a46cf1fb80350e536d33"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2"
   leak_tracker:
     dependency: transitive
     description:
@@ -280,6 +296,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.1"
+  simple_ripple_animation:
+    dependency: "direct main"
+    description:
+      name: simple_ripple_animation
+      sha256: d654c4a4a4a61ec8cf52b7b06dcf1bcb311c98e0a1a98534c6355aca2a73b6fd
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.9"
   sky_engine:
     dependency: transitive
     description: flutter
