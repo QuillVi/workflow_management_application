@@ -21,18 +21,19 @@ class _NewMessagesState extends State<NewMessages> {
   };
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: whiteColor,
+      backgroundColor: AppColor.whiteColor,
       appBar: AppBar(
-        backgroundColor: whiteColor,
+        backgroundColor: AppColor.whiteColor,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: blackColor),
+          icon: Icon(Icons.arrow_back, color: AppColor.blackColor),
           onPressed: () {},
         ),
-        title: Text('New Messages', style: TextStyle(color: blackColor)),
+        title:
+            Text('New Messages', style: TextStyle(color: AppColor.blackColor)),
         actions: [
           IconButton(
-            icon: Icon(Icons.edit, color: blackColor),
+            icon: Icon(Icons.edit, color: AppColor.blackColor),
             onPressed: () {},
           )
         ],
@@ -42,10 +43,11 @@ class _NewMessagesState extends State<NewMessages> {
         children: [
           ListTile(
             leading: CircleAvatar(
-              backgroundColor: buleColor,
-              child: Icon(Icons.group, color: whiteColor),
+              backgroundColor: AppColor.buleColor,
+              child: Icon(Icons.group, color: AppColor.whiteColor),
             ),
-            title: Text('Create a Group', style: TextStyle(color: blackColor)),
+            title: Text('Create a Group',
+                style: TextStyle(color: AppColor.blackColor)),
             onTap: () {},
           ),
           for (var letter in contacts.keys) ...[
@@ -54,7 +56,7 @@ class _NewMessagesState extends State<NewMessages> {
               child: Text(
                 letter,
                 style: TextStyle(
-                    color: buleColor,
+                    color: AppColor.buleColor,
                     fontSize: 18,
                     fontWeight: FontWeight.bold),
               ),
@@ -64,7 +66,7 @@ class _NewMessagesState extends State<NewMessages> {
                 leading: CircleAvatar(
                   backgroundImage: AssetImage('lib/images/user.png'),
                 ),
-                title: Text(name, style: TextStyle(color: blackColor)),
+                title: Text(name, style: TextStyle(color: AppColor.blackColor)),
               )
             ]
           ],

@@ -13,14 +13,14 @@ class _ChatDashBoardState extends State<ChatDashBoard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: whiteColor,
+      backgroundColor: AppColor.whiteColor,
       appBar: AppBar(
-        backgroundColor: whiteColor,
+        backgroundColor: AppColor.whiteColor,
         elevation: 0,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
-            color: blackColor,
+            color: AppColor.blackColor,
           ),
           onPressed: () {
             Navigator.pop(context);
@@ -28,13 +28,13 @@ class _ChatDashBoardState extends State<ChatDashBoard> {
         ),
         title: Text(
           'Messages',
-          style: TextStyle(color: blackColor),
+          style: TextStyle(color: AppColor.blackColor),
         ),
         actions: [
           IconButton(
             icon: Icon(
               Icons.edit,
-              color: whiteColor,
+              color: AppColor.whiteColor,
             ),
             onPressed: () {},
           ),
@@ -51,8 +51,8 @@ class _ChatDashBoardState extends State<ChatDashBoard> {
                   child: ElevatedButton(
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: whiteColor,
-                      backgroundColor: buleColor,
+                      foregroundColor: AppColor.whiteColor,
+                      backgroundColor: AppColor.buleColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -67,8 +67,8 @@ class _ChatDashBoardState extends State<ChatDashBoard> {
                   child: ElevatedButton(
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: blackColor,
-                      backgroundColor: greyColor,
+                      foregroundColor: AppColor.blackColor,
+                      backgroundColor: AppColor.greyColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -149,7 +149,7 @@ class ChatListItem extends StatelessWidget {
       ),
       title: Text(
         name,
-        style: TextStyle(color: blackColor),
+        style: TextStyle(color: AppColor.blackColor),
       ),
       subtitle: Text(
         message,
@@ -166,7 +166,7 @@ class ChatListItem extends StatelessWidget {
           if (time.contains('min'))
             Icon(
               Icons.circle,
-              color: greenColor,
+              color: AppColor.greenColor,
               size: 12,
             ),
         ],

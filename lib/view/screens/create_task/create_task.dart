@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:work_flow/themes/primarycolor.dart';
+import 'package:work_flow/view/widgets/app_dropdown.dart';
+import 'package:work_flow/view/widgets/custom_snackbar.dart';
 
 class CreateTask extends StatefulWidget {
   const CreateTask({super.key});
@@ -16,6 +18,13 @@ class _CreateTaskState extends State<CreateTask> {
   String? _selectedRequester = 'Trần Đông Vi';
   String? _selectedAssignee = 'Trần Đông Vi';
 
+  List<String> listAssign = ['Assignee 1', 'Assignee 2', 'Assignee 3'];
+  List<String> listRequester = ['Requester 1', 'Requester 2', 'Requester 3'];
+  List<String> listPriority = ['Low', 'Medium', 'High'];
+  List<String> listStatus = ['To do', 'In progress', 'Done'];
+  List<String> listTaskType = ['Task', 'Bug'];
+  List<String> listProject = ['MICXM APP', 'MICXM APP 2', 'MICXM APP 3'];
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -26,12 +35,12 @@ class _CreateTaskState extends State<CreateTask> {
         elevation: 0,
         backgroundColor: Colors.white,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
-        title: Text(
+        title: const Text(
           'Create Task',
           style: TextStyle(color: Colors.black),
         ),
@@ -41,160 +50,148 @@ class _CreateTaskState extends State<CreateTask> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Task name *',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
+            SizedBox(
+              height: 50,
+              child: TextField(
+                decoration: InputDecoration(
+                  labelText: 'Task name *',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
                 ),
               ),
             ),
-            SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              value: _selectedProject,
-              decoration: InputDecoration(
-                labelText: 'Project *',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              items: <String>['MICXM APP', 'Project 2', 'Project 3']
-                  .map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
+            const SizedBox(height: 16),
+            AppDropdown<String>(
+              label: 'Project',
+              dropdownMenuItemList: listProject
+                  .map(
+                    (e) => _itemDropdown(e),
+                  )
+                  .toList(),
               onChanged: (newValue) {
                 setState(() {
                   _selectedProject = newValue;
                 });
               },
+              hint: "Chọn Project",
+              value: _selectedProject,
             ),
-            SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              value: _selectedTaskType,
-              decoration: InputDecoration(
-                labelText: 'Task type',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              items: <String>['Task', 'Bug', 'Feature'].map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
+
+            const SizedBox(height: 16),
+            AppDropdown<String>(
+              label: 'Task type',
+              dropdownMenuItemList: listTaskType
+                  .map(
+                    (e) => _itemDropdown(e),
+                  )
+                  .toList(),
               onChanged: (newValue) {
                 setState(() {
                   _selectedTaskType = newValue;
                 });
               },
+              hint: 'Task type',
+              value: _selectedTaskType,
             ),
-            SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              value: _selectedPriority,
-              decoration: InputDecoration(
-                labelText: 'Priority',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              items: <String>['Low', 'Medium', 'High'].map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
+
+            const SizedBox(height: 16),
+            AppDropdown<String>(
+              label: 'Priority',
+              dropdownMenuItemList: listPriority
+                  .map(
+                    (e) => _itemDropdown(e),
+                  )
+                  .toList(),
               onChanged: (newValue) {
                 setState(() {
                   _selectedPriority = newValue;
                 });
               },
+              hint: "Chọn Priority",
+              value: _selectedPriority,
             ),
-            SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              value: _selectedStatus,
-              decoration: InputDecoration(
-                labelText: 'Status',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              items:
-                  <String>['To do', 'In Progress', 'Done'].map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
+
+            const SizedBox(height: 16),
+            AppDropdown<String>(
+              label: 'Status',
+              dropdownMenuItemList: listStatus
+                  .map(
+                    (e) => _itemDropdown(e),
+                  )
+                  .toList(),
               onChanged: (newValue) {
                 setState(() {
                   _selectedStatus = newValue;
                 });
               },
+              hint: "Chọn Status",
+              value: _selectedStatus,
             ),
-            SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              value: _selectedRequester,
-              decoration: InputDecoration(
-                labelText: 'Người yêu cầu',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              items: <String>['Trần Đông Vi', 'User 2', 'User 3']
-                  .map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
+
+            const SizedBox(height: 16),
+            AppDropdown<String>(
+              label: 'Người yêu cầu',
+              dropdownMenuItemList: listRequester
+                  .map(
+                    (e) => _itemDropdown(e),
+                  )
+                  .toList(),
               onChanged: (newValue) {
                 setState(() {
                   _selectedRequester = newValue;
                 });
               },
+              hint: 'Người yêu cầu',
+              value: _selectedRequester,
             ),
-            SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              value: _selectedAssignee,
-              decoration: InputDecoration(
-                labelText: 'Chỉ định xử lý',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              items: <String>['Trần Đông Vi', 'User 2', 'User 3']
-                  .map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
+
+            const SizedBox(height: 16),
+            AppDropdown<String>(
+              label: 'Chỉ định xử lý',
+              dropdownMenuItemList: listAssign
+                  .map(
+                    (e) => _itemDropdown(e),
+                  )
+                  .toList(),
               onChanged: (newValue) {
                 setState(() {
                   _selectedAssignee = newValue;
                 });
               },
+              hint: 'Chỉ định xử lý',
+              value: _selectedAssignee,
             ),
+
             //SizedBox(height: 32),
             Spacer(),
             ElevatedButton(
-              onPressed: () {
-                // Xử lý logic khi bấm nút "Create Task" ở đây
-              },
+              onPressed: () {},
               child: Text('Create Task',
                   style: TextStyle(fontSize: 18, color: Colors.white)),
               style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(
-                      vertical: screenHeight * 0.025,
-                      horizontal: screenWidth * 0.33),
+                  padding: EdgeInsets.symmetric(vertical: 16, horizontal: 130),
                   textStyle: TextStyle(fontSize: 18),
-                  backgroundColor: primaryColor),
+                  backgroundColor: AppColor.primaryColor),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  DropdownMenuItem<String> _itemDropdown(String e) {
+    return DropdownMenuItem(
+      value: e,
+      child: Container(
+        //    color: Colors.white,
+        child: Text(
+          e,
+          style: const TextStyle(
+            color: Colors.black,
+            fontSize: 12,
+            fontWeight: FontWeight.normal,
+          ),
         ),
       ),
     );

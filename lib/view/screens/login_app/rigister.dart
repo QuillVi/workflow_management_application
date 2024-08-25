@@ -113,14 +113,15 @@ class _RigisterState extends State<Rigister> {
                                     },
                                     child: Text(
                                       'Ok',
-                                      style: TextStyle(color: primaryColor),
+                                      style: TextStyle(
+                                          color: AppColor.primaryColor),
                                     ),
                                   ),
                                 ]));
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: primaryColor, // Màu nền của nút
+                  backgroundColor: AppColor.primaryColor, // Màu nền của nút
                   padding: EdgeInsets.symmetric(vertical: 15),
                   minimumSize: Size(double.infinity, 50), // Chiều rộng của nút
                   shape: RoundedRectangleBorder(
@@ -129,7 +130,7 @@ class _RigisterState extends State<Rigister> {
                 ),
                 child: Text(
                   'Tạo tài khoản',
-                  style: TextStyle(fontSize: 16, color: whiteColor),
+                  style: TextStyle(fontSize: 16, color: AppColor.whiteColor),
                 ),
               ),
               SizedBox(height: 20),
@@ -150,7 +151,7 @@ class _RigisterState extends State<Rigister> {
                     child: Text(
                       'đăng nhập',
                       style: TextStyle(
-                        color: primaryColor,
+                        color: AppColor.primaryColor,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

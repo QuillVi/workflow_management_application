@@ -37,11 +37,18 @@ dependencies:
   http: ^1.2.2
   get: ^4.6.6
   shared_preferences: ^2.0.18
+  dropdown_button2: ^2.0.0
+  simple_ripple_animation: ^0.0.9
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
+  flutter_launcher_icons: ^0.13.1
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  remove_alpha_ios: true
+  image_path: "assets/icons/logo.png"
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
@@ -62,6 +69,8 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - lib/images/
+    - assets/icons/
+
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:work_flow/themes/primarycolor.dart';
 import 'package:work_flow/view/screens/login_app/login.dart';
 import 'package:work_flow/view/screens/login_app/rigister.dart';
-import 'package:work_flow/widgets/content_model.dart';
+import 'package:work_flow/view/widgets/content_model.dart';
 
 class SplashCreenWordGroup1 extends StatefulWidget {
   const SplashCreenWordGroup1({super.key});
@@ -96,7 +96,7 @@ class _SplashCreenWordGroup1State extends State<SplashCreenWordGroup1> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryColor, // Button color
+                      backgroundColor: AppColor.primaryColor, // Button color
                       padding:
                           EdgeInsets.symmetric(horizontal: 150, vertical: 5),
                       shape: RoundedRectangleBorder(
@@ -105,7 +105,8 @@ class _SplashCreenWordGroup1State extends State<SplashCreenWordGroup1> {
                     ),
                     child: Text(
                       'Đăng ký',
-                      style: TextStyle(fontSize: 16, color: whiteColor),
+                      style:
+                          TextStyle(fontSize: 16, color: AppColor.whiteColor),
                     ),
                   ),
                   SizedBox(height: 10),
@@ -129,7 +130,7 @@ class _SplashCreenWordGroup1State extends State<SplashCreenWordGroup1> {
                       'Đăng nhập',
                       style: TextStyle(
                         fontSize: 16,
-                        color: primaryColor,
+                        color: AppColor.primaryColor,
                       ),
                     ),
                   ),
@@ -149,7 +150,7 @@ class _SplashCreenWordGroup1State extends State<SplashCreenWordGroup1> {
       margin: EdgeInsets.only(right: 10, left: 10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(6),
-        color: currentIndex == index ? blackColor : Colors.black38,
+        color: currentIndex == index ? AppColor.blackColor : Colors.black38,
       ),
     );
   }
