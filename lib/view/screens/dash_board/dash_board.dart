@@ -1,7 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:work_flow/themes/primarycolor.dart';
+import 'package:work_flow/view/screens/chat/chat_dash_board.dart';
 
 class DashBoard extends StatefulWidget {
   const DashBoard({super.key});
@@ -68,8 +70,14 @@ class _DashBoardState extends State<DashBoard> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications, color: Colors.grey),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const ChatDashBoard()));
+            },
+            icon: Image.asset('lib/images/chat.png',
+                width: 25, height: 25, color: Colors.grey[700]),
           ),
         ],
       ),

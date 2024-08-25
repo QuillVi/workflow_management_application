@@ -15,8 +15,11 @@ class _CreateTaskState extends State<CreateTask> {
   String? _selectedStatus = 'To do';
   String? _selectedRequester = 'Trần Đông Vi';
   String? _selectedAssignee = 'Trần Đông Vi';
+
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -185,7 +188,9 @@ class _CreateTaskState extends State<CreateTask> {
               child: Text('Create Task',
                   style: TextStyle(fontSize: 18, color: Colors.white)),
               style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 16, horizontal: 130),
+                  padding: EdgeInsets.symmetric(
+                      vertical: screenHeight * 0.025,
+                      horizontal: screenWidth * 0.33),
                   textStyle: TextStyle(fontSize: 18),
                   backgroundColor: primaryColor),
             ),

@@ -27,7 +27,14 @@ class _MyTaskDashBoardState extends State<MyTaskDashBoard>
         backgroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {},
+          onPressed: () {
+            // if (Navigator.canPop(context)) {
+            //   Navigator.pop(context);
+            // } else {
+            //   // Handle the case where the previous screen does not exist
+            //   print('No previous screen to pop to');
+            // }
+          },
         ),
         title: const Text(
           'Task',

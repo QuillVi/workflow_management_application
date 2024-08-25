@@ -4,6 +4,7 @@ import 'package:work_flow/view/screens/chat/chat_dash_board.dart';
 import 'package:work_flow/view/screens/create_task/my_task_dash_board.dart';
 import 'package:work_flow/view/screens/dash_board/category_board.dart';
 import 'package:work_flow/view/screens/dash_board/dash_board.dart';
+import 'package:work_flow/view/screens/dash_board/notification.dart';
 import 'package:work_flow/view/screens/dash_board/profile_board.dart';
 
 class Mybottomnavigationbar extends StatefulWidget {
@@ -20,7 +21,7 @@ class _MybottomnavigationbarState extends State<Mybottomnavigationbar> {
     DashBoard(),
     CategoryBoard(),
     MyTaskDashBoard(),
-    ChatDashBoard(),
+    NotificationsScreen(),
     ProfileBoard(),
   ];
 
@@ -55,8 +56,8 @@ class _MybottomnavigationbarState extends State<Mybottomnavigationbar> {
             label: '',
           ),
           const BottomNavigationBarItem(
-            icon: Icon(Icons.chat_outlined),
-            label: 'Chat',
+            icon: Icon(Icons.notifications_outlined),
+            label: 'Notify',
           ),
           const BottomNavigationBarItem(
             icon: Icon(Icons.person_outlined),
