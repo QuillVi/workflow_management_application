@@ -58,12 +58,6 @@ class _ProfileBoardState extends State<ProfileBoard> {
       appBar: AppBar(
         backgroundColor: AppColor.whiteColor,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColor.blackColor),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
         title: Text(
           'Profile',
           style: TextStyle(color: AppColor.blackColor),

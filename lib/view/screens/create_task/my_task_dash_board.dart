@@ -116,9 +116,9 @@ class _MyTaskDashBoardState extends State<MyTaskDashBoard>
             Navigator.push(
                 context, MaterialPageRoute(builder: (_) => const CreateTask()));
           },
-          child: const Icon(Icons.add),
           backgroundColor: AppColor.whiteColor,
           shape: CircleBorder(side: BorderSide(color: AppColor.whiteColor)),
+          child: const Icon(Icons.add),
         ),
       ),
     );
