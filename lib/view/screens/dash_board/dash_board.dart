@@ -15,40 +15,6 @@ class DashBoard extends StatefulWidget {
 class _DashBoardState extends State<DashBoard> {
   int? selectedDateIndex;
 
-  //   switch (index) {
-  //     case 0:
-  //       Navigator.push(
-  //         context,
-  //         MaterialPageRoute(builder: (context) => const DashBoard()),
-  //       );
-  //       break;
-  //     case 1:
-  //       Navigator.push(
-  //         context,
-  //         MaterialPageRoute(builder: (context) => const CategoryBoard()),
-  //       );
-  //       break;
-  //     case 2:
-  //       Navigator.push(
-  //         context,
-  //         MaterialPageRoute(builder: (context) => const MyTaskDashBoard()),
-  //       );
-  //       break;
-  //     case 3:
-  //       Navigator.push(
-  //         context,
-  //         MaterialPageRoute(builder: (context) => const ChatDashBoard()),
-  //       );
-  //       break;
-  //     case 4:
-  //       Navigator.push(
-  //         context,
-  //         MaterialPageRoute(builder: (context) => const ProfileBoard()),
-  //       );
-  //       break;
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

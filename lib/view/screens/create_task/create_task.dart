@@ -1,7 +1,12 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:work_flow/themes/primarycolor.dart';
 import 'package:work_flow/view/widgets/app_dropdown.dart';
 import 'package:work_flow/view/widgets/custom_snackbar.dart';
+import 'package:intl/intl.dart';
+import 'package:custom_date_range_picker/custom_date_range_picker.dart';
 
 class CreateTask extends StatefulWidget {
   const CreateTask({super.key});
@@ -11,24 +16,25 @@ class CreateTask extends StatefulWidget {
 }
 
 class _CreateTaskState extends State<CreateTask> {
-  String? _selectedProject = 'MICXM APP';
-  String? _selectedTaskType = 'Task';
-  String? _selectedPriority = 'Low';
-  String? _selectedStatus = 'To do';
-  String? _selectedRequester = 'Trần Đông Vi';
-  String? _selectedAssignee = 'Trần Đông Vi';
-
-  List<String> listAssign = ['Assignee 1', 'Assignee 2', 'Assignee 3'];
-  List<String> listRequester = ['Requester 1', 'Requester 2', 'Requester 3'];
+  List<String> listProject = ['MICXM APP', 'Project 2', 'Project 3'];
+  List<String> listTaskType = ['Task', 'Bug', 'Feature'];
   List<String> listPriority = ['Low', 'Medium', 'High'];
-  List<String> listStatus = ['To do', 'In progress', 'Done'];
-  List<String> listTaskType = ['Task', 'Bug'];
-  List<String> listProject = ['MICXM APP', 'MICXM APP 2', 'MICXM APP 3'];
+  List<String> listStatus = ['To do', 'In Progress', 'Done'];
+  List<String> listRequester = ['Trần Đông Vi', 'User 2', 'User 3'];
+  List<String> listAssign = ['Van Phu', 'User 2', 'User 3'];
+
+  String? _selectedProject;
+  String? _selectedTaskType;
+  String? _selectedPriority;
+  String? _selectedStatus;
+  String? _selectedRequester;
+  String? _selectedAssignee;
+
+  DateTime _selectedDateStart = DateTime.now();
+  DateTime _selectedDateEnd = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -77,7 +83,6 @@ class _CreateTaskState extends State<CreateTask> {
               hint: "Chọn Project",
               value: _selectedProject,
             ),
-
             const SizedBox(height: 16),
             AppDropdown<String>(
               label: 'Task type',
@@ -94,7 +99,6 @@ class _CreateTaskState extends State<CreateTask> {
               hint: 'Task type',
               value: _selectedTaskType,
             ),
-
             const SizedBox(height: 16),
             AppDropdown<String>(
               label: 'Priority',
@@ -111,7 +115,6 @@ class _CreateTaskState extends State<CreateTask> {
               hint: "Chọn Priority",
               value: _selectedPriority,
             ),
-
             const SizedBox(height: 16),
             AppDropdown<String>(
               label: 'Status',
@@ -128,7 +131,6 @@ class _CreateTaskState extends State<CreateTask> {
               hint: "Chọn Status",
               value: _selectedStatus,
             ),
-
             const SizedBox(height: 16),
             AppDropdown<String>(
               label: 'Người yêu cầu',
@@ -145,7 +147,6 @@ class _CreateTaskState extends State<CreateTask> {
               hint: 'Người yêu cầu',
               value: _selectedRequester,
             ),
-
             const SizedBox(height: 16),
             AppDropdown<String>(
               label: 'Chỉ định xử lý',
@@ -162,17 +163,86 @@ class _CreateTaskState extends State<CreateTask> {
               hint: 'Chỉ định xử lý',
               value: _selectedAssignee,
             ),
-
-            //SizedBox(height: 32),
-            Spacer(),
-            ElevatedButton(
-              onPressed: () {},
-              child: Text('Create Task',
-                  style: TextStyle(fontSize: 18, color: Colors.white)),
-              style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 16, horizontal: 130),
-                  textStyle: TextStyle(fontSize: 18),
-                  backgroundColor: AppColor.primaryColor),
+            const SizedBox(height: 16),
+            InkWell(
+              onTap: () {
+                showDatePicker(
+                  context: context,
+                  initialDate: _selectedDateStart,
+                  firstDate: DateTime(2020),
+                  lastDate: DateTime(2030),
+                ).then((picked) {
+                  if (picked != null) {
+                    setState(() {
+                      _selectedDateStart = picked;
+                    });
+                  }
+                });
+              },
+              child: AppDropdown<String>(
+                label: 'Ngày bắt đầu',
+                dropdownMenuItemList: [],
+                onChanged: (newValue) {},
+                hint: _selectedDateStart == null
+                    ? ''
+                    : DateFormat('dd-MM-yyyy').format(_selectedDateStart),
+                value: _selectedDateStart == null
+                    ? ''
+                    : DateFormat('dd-MM-yyyy').format(_selectedDateStart),
+              ),
+            ),
+            const SizedBox(height: 16),
+            InkWell(
+              onTap: () {
+                showDatePicker(
+                  context: context,
+                  initialDate: _selectedDateEnd,
+                  firstDate: DateTime(2020),
+                  lastDate: DateTime(2030),
+                ).then((picked) {
+                  if (picked != null) {
+                    setState(() {
+                      _selectedDateEnd = picked;
+                    });
+                  }
+                });
+              },
+              child: AppDropdown<String>(
+                label: 'Ngày kết thúc',
+                dropdownMenuItemList: [],
+                onChanged: (newValue) {},
+                hint: _selectedDateEnd == null
+                    ? ''
+                    : DateFormat('dd-MM-yyyy').format(_selectedDateEnd),
+                value: _selectedDateEnd == null
+                    ? ''
+                    : DateFormat('dd-MM-yyyy').format(_selectedDateEnd),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Spacer(),
+            InkWell(
+              onTap: () {
+                ShowSnackBarCustom.showSnackBar(
+                    this.context,
+                    'Success',
+                    AppColor.greenColor,
+                    const Icon(
+                      Icons.check,
+                      color: Colors.white,
+                    ));
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                width: double.infinity,
+                decoration: BoxDecoration(
+                    color: AppColor.primaryColor,
+                    borderRadius: BorderRadius.circular(16)),
+                child: const Center(
+                  child: Text('Create Task',
+                      style: TextStyle(fontSize: 16, color: Colors.white)),
+                ),
+              ),
             ),
           ],
         ),

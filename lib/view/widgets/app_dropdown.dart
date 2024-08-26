@@ -12,9 +12,10 @@ class AppDropdown<T> extends StatefulWidget {
   final bool isEnabled;
 //  final Widget? clearWidget;
   final double? hightDropdown;
+  final VoidCallback? onTap;
 
   AppDropdown({
-    super.key,
+    Key? key,
     required this.dropdownMenuItemList,
     required this.onChanged,
     required this.label,
@@ -24,8 +25,9 @@ class AppDropdown<T> extends StatefulWidget {
     required this.value,
     this.hightDropdown,
     this.isEnabled = true,
+    this.onTap,
     // required this.clearWidget,
-  });
+  }) : super(key: key);
 
   @override
   State<AppDropdown> createState() => _AppDropdownState<T>();

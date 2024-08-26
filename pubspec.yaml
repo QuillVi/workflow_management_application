@@ -39,6 +39,9 @@ dependencies:
   shared_preferences: ^2.0.18
   dropdown_button2: ^2.0.0
   simple_ripple_animation: ^0.0.9
+  intl: ^0.19.0
+  syncfusion_flutter_datepicker: ^26.2.10
+  custom_date_range_picker: ^1.1.0
 
 dev_dependencies:
   flutter_test:
