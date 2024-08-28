@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:work_flow/view/screens/dash_board/mybottomnavigationbar.dart';
+import 'package:work_flow/view/screens/login_app/rigister.dart';
 
 void main() {
   runApp(const MyApp());

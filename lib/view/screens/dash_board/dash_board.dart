@@ -149,6 +149,32 @@ class _DashBoardState extends State<DashBoard> {
                     );
                   },
                 ),
+              ),
+              Expanded(
+                child: ListView(
+                  children: contacts.map((contact) {
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundImage: AssetImage('lib/images/user.png'),
+                      ),
+                      title: Text(
+                        contact.name,
+                        style: TextStyle(color: AppColor.blackColor),
+                      ),
+                      trailing: Container(
+                        width: 10,
+                        height: 10,
+                        decoration: BoxDecoration(
+                          color: contact.isOnline
+                              ? Colors.green
+                              : Colors
+                                  .grey, // màu xanh lá nếu online, màu xám nếu offline
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
               )
             ],
           ),
@@ -157,6 +183,28 @@ class _DashBoardState extends State<DashBoard> {
     );
   }
 }
+
+class Contact {
+  String name;
+  bool isOnline;
+
+  Contact({required this.name, required this.isOnline});
+}
+
+final List<Contact> contacts = [
+  Contact(name: 'Amelia', isOnline: true),
+  Contact(name: 'Alexander', isOnline: false),
+  Contact(name: 'Olivia', isOnline: true),
+  Contact(name: 'Isabella', isOnline: false),
+  Contact(name: 'Ava', isOnline: true),
+  Contact(name: 'Ethan', isOnline: true),
+  Contact(name: 'Charlotte', isOnline: false),
+  Contact(name: 'Mia', isOnline: true),
+  Contact(name: 'Harper', isOnline: false),
+  Contact(name: 'Evelyn', isOnline: true),
+  Contact(name: 'Abigail', isOnline: false),
+  Contact(name: 'Emily', isOnline: true),
+];
 
 class SummaryCard extends StatelessWidget {
   final String label;

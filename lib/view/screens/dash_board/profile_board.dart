@@ -10,165 +10,95 @@ class ProfileBoard extends StatefulWidget {
 }
 
 class _ProfileBoardState extends State<ProfileBoard> {
-  void _onItemTappedProFileInfoCard(int index) {
-    String label;
-
-    switch (index) {
-      case 0:
-        label = 'dongvi';
-        break;
-      case 1:
-        label = 'Password';
-        break;
-      case 2:
-        label = 'My Task';
-        break;
-      case 3:
-        label = 'Setting';
-        break;
-      default:
-        return;
-    }
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) {
-          switch (label) {
-            case 'dongvi':
-              return ProfileBoard();
-            case 'Password':
-              return ProfileBoard();
-            case 'My Task':
-              return MyTaskDashBoard();
-            case 'Setting':
-              return ProfileBoard();
-            default:
-              return Container();
-          }
-        },
-      ),
-    );
-  }
+  bool notificationsOn = true;
+  String language = "Tiếng việt";
+  String theme = "Sáng";
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColor.whiteColor,
       appBar: AppBar(
-        backgroundColor: AppColor.whiteColor,
         elevation: 0,
-        title: Text(
-          'Profile',
-          style: TextStyle(color: AppColor.blackColor),
+        leading: IconButton(
+          icon: Icon(Icons.notifications_active_outlined, color: Colors.black),
+          onPressed: () {},
         ),
-        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.more_vert, color: Colors.black),
+            onPressed: () {},
+          ),
+        ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            SizedBox(height: 20),
             CircleAvatar(
               radius: 50,
-              backgroundColor: AppColor.whiteColor,
-              child: CircleAvatar(
-                radius: 45,
-                backgroundImage: AssetImage('lib/images/user.png'),
-              ),
-            ),
-            IconButton(
-              icon: Icon(Icons.add_circle, color: AppColor.primaryColor),
-              onPressed: () {},
-            ),
-            ProfileInfoCard(
-              icon: Icons.person,
-              label: 'dong vi',
-              onTap: () => _onItemTappedProFileInfoCard(0),
-            ),
-            ProfileInfoCard(
-              icon: Icons.lock,
-              label: 'Password',
-              onTap: () => _onItemTappedProFileInfoCard(1),
-            ),
-            ProfileInfoCard(
-              icon: Icons.task,
-              label: 'My Tasks',
-              onTap: () => _onItemTappedProFileInfoCard(2),
-            ),
-            ProfileInfoCard(
-              icon: Icons.settings,
-              label: 'Setting',
-              onTap: () => _onItemTappedProFileInfoCard(3),
-            ),
-            Spacer(),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 25.0),
-              child: SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton.icon(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    backgroundColor: AppColor.primaryColor,
-                  ),
-                  icon: Icon(
-                    Icons.logout,
-                    color: AppColor.whiteColor,
-                  ),
-                  label: Text(
-                    'Logout',
-                    style: TextStyle(fontSize: 18, color: AppColor.whiteColor),
-                  ),
+              backgroundImage: AssetImage('lib/images/user.png'),
+              child: Align(
+                alignment: Alignment.bottomRight,
+                child: CircleAvatar(
+                  radius: 15,
+                  backgroundColor: Colors.white,
+                  child: Icon(Icons.edit, size: 16, color: Colors.black),
                 ),
               ),
             ),
+            SizedBox(height: 10),
+            Text(
+              'Dong Vi',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              'youremail@domain.com | +01 234 567 89',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.black54,
+              ),
+            ),
+            SizedBox(height: 20),
+            buildProfileOption(
+                Icons.person_outlined, 'Chỉnh sửa thông tin trang cá nhân'),
+            buildProfileOption(Icons.notifications_outlined, 'Nhận thông báo',
+                trailingText: notificationsOn ? 'Bật' : 'Tắt'),
+            buildProfileOption(Icons.language_outlined, 'Ngôn ngữ',
+                trailingText: language),
+            SizedBox(height: 10),
+            buildProfileOption(Icons.security_outlined, 'Bảo mật'),
+            buildProfileOption(Icons.brightness_6_outlined, 'Giao diện',
+                trailingText: theme),
+            SizedBox(height: 10),
+            buildProfileOption(Icons.help_outlined, 'Trợ giúp và hỗ trợ'),
+            buildProfileOption(Icons.contact_mail_outlined, 'Liên hệ'),
+            buildProfileOption(
+                Icons.privacy_tip_outlined, 'Chính sách bảo mật'),
           ],
         ),
       ),
     );
   }
-}
 
-class ProfileInfoCard extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final bool isEditable;
-  final VoidCallback onTap;
-
-  const ProfileInfoCard({
-    Key? key,
-    required this.icon,
-    required this.label,
-    required this.onTap,
-    this.isEditable = false,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 8),
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColor.whiteColor,
-        borderRadius: BorderRadius.circular(8),
+  Widget buildProfileOption(IconData icon, String title,
+      {String? trailingText}) {
+    return ListTile(
+      leading: Icon(icon, color: Colors.black),
+      title: Text(
+        title,
+        style: TextStyle(fontSize: 13),
       ),
-      child: Row(
-        children: [
-          Icon(icon, color: AppColor.blackColor, size: 30),
-          SizedBox(width: 16),
-          Expanded(
-            child: Text(
-              label,
-              style: TextStyle(color: AppColor.blackColor, fontSize: 18),
-            ),
-          ),
-          if (isEditable)
-            Icon(Icons.edit, color: AppColor.blackColor, size: 20),
-        ],
-      ),
+      trailing: trailingText != null
+          ? Text(
+              trailingText,
+              style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+            )
+          : null,
+      onTap: () {},
     );
   }
 }
