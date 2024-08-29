@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart';
 import 'package:work_flow/themes/primarycolor.dart';
 import 'package:work_flow/view/screens/login_app/login.dart';
+import 'package:http/http.dart' as http;
+import 'dart:io';
 
 class Rigister extends StatefulWidget {
   const Rigister({super.key});
@@ -18,7 +19,34 @@ class _RigisterState extends State<Rigister> {
   final TextEditingController confirmPasswordController =
       TextEditingController();
 
-  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  void register(String name, String email, String password,
+      String confirmPassword) async {
+    try {
+      final response =
+          await post(Uri.parse('http://192.168.1.3:3000/api/register'), body: {
+        'name': name,
+        'username': email,
+        'password': password,
+        'password_confirmation': confirmPassword,
+      });
+
+      if (response.statusCode == 200) {
+        print('Tài khoản được tạo thành công!');
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => Login()),
+        );
+      } else {
+        print('Tạo tài khoản thất bại!');
+      }
+    } catch (e) {
+      if (e is SocketException) {
+        print('Lỗi kết nối đến server!');
+      } else {
+        print('Lỗi: ${e.toString()}');
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -86,39 +114,12 @@ class _RigisterState extends State<Rigister> {
               SizedBox(height: 30),
               ElevatedButton(
                 onPressed: () {
-                  // Xử lý khi nhấn nút "Tạo tài khoản"
-                  String name = nameController.text;
-                  String email = emailController.text;
-                  String password = passwordController.text;
-                  String confirmPassword = confirmPasswordController.text;
-
-                  // Kiem tra thong tin nhap vao
-                  if (name.isEmpty ||
-                      email.isEmpty ||
-                      password.isEmpty ||
-                      confirmPassword.isEmpty) {
-                    // Thong bao thieu thong tin
-                    showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                                title: Text('Thông báo'),
-                                content: Text('Vui lòng nhập đầy đủ thông tin'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () async {
-                                      final SharedPreferences? prefs =
-                                          await _prefs;
-                                      prefs?.clear();
-                                      Get.offAll(() => Login());
-                                    },
-                                    child: Text(
-                                      'Ok',
-                                      style: TextStyle(
-                                          color: AppColor.primaryColor),
-                                    ),
-                                  ),
-                                ]));
-                  }
+                  register(
+                    nameController.text.toString(),
+                    emailController.text.toString(),
+                    passwordController.text.toString(),
+                    confirmPasswordController.text.toString(),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColor.primaryColor, // Màu nền của nút

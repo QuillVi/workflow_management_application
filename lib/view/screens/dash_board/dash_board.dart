@@ -18,167 +18,165 @@ class _DashBoardState extends State<DashBoard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        title: Row(
-          children: [
-            CircleAvatar(
-              backgroundColor: Colors.blue,
-              child: Image.asset('lib/images/user.png'),
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            pinned: true,
+            elevation: 0,
+            backgroundColor: Colors.white,
+            title: Row(
+              children: [
+                CircleAvatar(
+                  backgroundColor: Colors.blue,
+                  child: Image.asset('lib/images/user.png'),
+                ),
+                const SizedBox(width: 10),
+                const Text(
+                  'Xin chào , Vi',
+                  style: TextStyle(color: Colors.black),
+                ),
+              ],
             ),
-            const SizedBox(width: 10),
-            const Text(
-              'Xin chào , Vi',
-              style: TextStyle(color: Colors.black),
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const ChatDashBoard()));
-            },
-            icon: Image.asset('lib/images/chat.png',
-                width: 25, height: 25, color: Colors.grey[700]),
-          ),
-        ],
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Tổng kết',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SummaryCard(
-                    label: 'Trong tuần',
-                    value: '84',
-                    color: AppColor.whiteColor,
-                    colorbackground: AppColor.primaryColor,
-                    sizebackground: const Size(80, 80),
-                  ),
-                  SummaryCard(
-                    label: 'Đang làm',
-                    value: '16',
-                    color: AppColor.whiteColor,
-                    sizebackground: const Size(80, 80),
-                    colorbackground: AppColor.yellowColor,
-                  ),
-                  SummaryCard(
-                    label: 'Hoàn thành',
-                    value: '16',
-                    color: AppColor.whiteColor,
-                    sizebackground: const Size(80, 80),
-                    colorbackground: AppColor.greenColor,
-                  ),
-                  SummaryCard(
-                    label: 'Quá hạn',
-                    value: '16',
-                    color: AppColor.whiteColor,
-                    sizebackground: const Size(80, 80),
-                    colorbackground: AppColor.redColor,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'Hoạt động',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-              ),
-              const SizedBox(height: 10),
-              Container(
-                child: SizedBox(
-                  height: 65,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: daysOfWeek.length,
-                    itemBuilder: (context, index) {
-                      return ActivityChip(
-                        label: daysOfWeek[index],
-                        time: '1/2 (3h)',
-                        index: index,
-                        onTap: () {
-                          setState(() {
-                            selectedDateIndex = index;
-                          });
-                        },
-                        active: selectedDateIndex == index,
-                      );
-                    },
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'Công việc hôm nay',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-              ),
-              const SizedBox(height: 10),
-              Container(
-                height: 150,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: 2,
-                  itemBuilder: (context, index) {
-                    return Row(
-                      children: [
-                        TaskCard(
-                          title: 'Refresh Data Màn hình danh sách Telesales',
-                          date: '04-08/06-08',
-                          iconuser: Image.asset(
-                            'lib/images/user.png',
-                            width: 30,
-                            height: 30,
-                          ),
-                          appName: 'MICXM/FieldSale App',
-                          taskNumber: '[222]',
-                        ),
-                        const SizedBox(width: 10),
-                      ],
-                    );
-                  },
-                ),
-              ),
-              Expanded(
-                child: ListView(
-                  children: contacts.map((contact) {
-                    return ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage: AssetImage('lib/images/user.png'),
-                      ),
-                      title: Text(
-                        contact.name,
-                        style: TextStyle(color: AppColor.blackColor),
-                      ),
-                      trailing: Container(
-                        width: 10,
-                        height: 10,
-                        decoration: BoxDecoration(
-                          color: contact.isOnline
-                              ? Colors.green
-                              : Colors
-                                  .grey, // màu xanh lá nếu online, màu xám nếu offline
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
+            actions: [
+              IconButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ChatDashBoard()));
+                },
+                icon: Image.asset('lib/images/chat.png',
+                    width: 25, height: 25, color: Colors.grey[700]),
               )
             ],
           ),
-        ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Tổng kết',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SummaryCard(
+                        label: 'Trong tuần',
+                        value: '84',
+                        color: AppColor.whiteColor,
+                        colorbackground: AppColor.primaryColor,
+                        sizebackground: const Size(80, 80),
+                      ),
+                      SummaryCard(
+                        label: 'Đang làm',
+                        value: '16',
+                        color: AppColor.whiteColor,
+                        sizebackground: const Size(80, 80),
+                        colorbackground: AppColor.yellowColor,
+                      ),
+                      SummaryCard(
+                        label: 'Hoàn thành',
+                        value: '16',
+                        color: AppColor.whiteColor,
+                        sizebackground: const Size(80, 80),
+                        colorbackground: AppColor.greenColor,
+                      ),
+                      SummaryCard(
+                        label: 'Quá hạn',
+                        value: '16',
+                        color: AppColor.whiteColor,
+                        sizebackground: const Size(80, 80),
+                        colorbackground: AppColor.redColor,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Hoạt động',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    child: SizedBox(
+                      height: 65,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: daysOfWeek.length,
+                        itemBuilder: (context, index) {
+                          return ActivityChip(
+                            label: daysOfWeek[index],
+                            time: '1/2 (3h)',
+                            index: index,
+                            onTap: () {
+                              setState(() {
+                                selectedDateIndex = index;
+                              });
+                            },
+                            active: selectedDateIndex == index,
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    height: 150,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: 2,
+                      itemBuilder: (context, index) {
+                        return Row(
+                          children: [
+                            TaskCard(
+                              title:
+                                  'Refresh Data Màn hình danh sách Telesales',
+                              date: '04-08/06-08',
+                              iconuser: Image.asset(
+                                'lib/images/user.png',
+                                width: 30,
+                                height: 30,
+                              ),
+                              appName: 'MICXM/FieldSale App',
+                              taskNumber: '[222]',
+                            ),
+                            const SizedBox(width: 10),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                  ListView(
+                    shrinkWrap: true,
+                    children: contacts.map((contact) {
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage: AssetImage('lib/images/user.png'),
+                        ),
+                        title: Text(
+                          contact.name,
+                          style: TextStyle(color: AppColor.blackColor),
+                        ),
+                        trailing: Container(
+                          width: 10,
+                          height: 10,
+                          decoration: BoxDecoration(
+                            color:
+                                contact.isOnline ? Colors.green : Colors.grey,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  )
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

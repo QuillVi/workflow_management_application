@@ -1,5 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:work_flow/themes/primarycolor.dart';
+import 'package:http/http.dart';
+import 'package:work_flow/view/screens/dash_board/dash_board.dart';
+import 'package:work_flow/utils/connect_mysql.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -12,6 +17,27 @@ class _LoginState extends State<Login> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool keepLoggedIn = false;
+
+  void login(String email, String password) async {
+    try {
+      final response =
+          await post(Uri.parse('http://192.168.1.3:3000/api/login'), body: {
+        'username': email,
+        'password': password,
+      });
+
+      if (response.statusCode == 200) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => DashBoard()),
+        );
+      } else {
+        print('Lỗi: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Lỗi: ${e.toString()}');
+    }
+  }
 
   @override
   void dispose() {
@@ -73,12 +99,12 @@ class _LoginState extends State<Login> {
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  // Xử lý khi nhấn nút "Đăng nhập"
+                  login(emailController.text, passwordController.text);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColor.primaryColor, // Màu nền của nút
+                  backgroundColor: AppColor.primaryColor,
                   padding: EdgeInsets.symmetric(vertical: 15),
-                  minimumSize: Size(double.infinity, 50), // Chiều rộng của nút
+                  minimumSize: Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(6),
                   ),
@@ -105,26 +131,20 @@ class _LoginState extends State<Login> {
                 children: [
                   IconButton(
                     icon: CircleAvatar(
-                      radius: 30, // Kích thước của hình tròn
-                      backgroundImage: AssetImage(
-                          'lib/images/face.png'), // Hình ảnh của Facebook
+                      radius: 30,
+                      backgroundImage: AssetImage('lib/images/face.png'),
                     ),
-                    iconSize: 10, // Kích thước của IconButton
-                    onPressed: () {
-                      // Xử lý khi nhấn vào đăng nhập bằng Facebook
-                    },
+                    iconSize: 10,
+                    onPressed: () {},
                   ),
                   SizedBox(width: 30),
                   IconButton(
                     icon: CircleAvatar(
-                      radius: 30, // Kích thước của hình tròn
-                      backgroundImage: AssetImage(
-                          'lib/images/google.png'), // Hình ảnh của gg
+                      radius: 30,
+                      backgroundImage: AssetImage('lib/images/google.png'),
                     ),
-                    iconSize: 10, // Kích thước của IconButton
-                    onPressed: () {
-                      // Xử lý khi nhấn vào đăng nhập bằng gg
-                    },
+                    iconSize: 10,
+                    onPressed: () {},
                   ),
                 ],
               ),

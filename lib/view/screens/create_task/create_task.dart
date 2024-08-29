@@ -6,7 +6,6 @@ import 'package:work_flow/themes/primarycolor.dart';
 import 'package:work_flow/view/widgets/app_dropdown.dart';
 import 'package:work_flow/view/widgets/custom_snackbar.dart';
 import 'package:intl/intl.dart';
-import 'package:custom_date_range_picker/custom_date_range_picker.dart';
 
 class CreateTask extends StatefulWidget {
   const CreateTask({super.key});
