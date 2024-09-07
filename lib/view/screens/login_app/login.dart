@@ -1,10 +1,12 @@
-import 'dart:io';
+import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:work_flow/themes/primarycolor.dart';
 import 'package:http/http.dart';
 import 'package:work_flow/view/screens/dash_board/dash_board.dart';
-import 'package:work_flow/utils/connect_mysql.dart';
+import 'package:work_flow/view/screens/dash_board/mybottomnavigationbar.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -14,29 +16,61 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool keepLoggedIn = false;
 
+  String? finalName;
+  bool obscureText = true;
+
   void login(String email, String password) async {
     try {
       final response =
-          await post(Uri.parse('http://192.168.1.3:3000/api/login'), body: {
+          await post(Uri.parse('http://192.168.1.103:3000/api/login'), body: {
         'username': email,
         'password': password,
       });
 
       if (response.statusCode == 200) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => DashBoard()),
-        );
+        Map<String, dynamic> mapResponse = jsonDecode(response.body);
+        updateData(mapResponse);
+        print(' ${mapResponse['Name']}');
+        if (mapResponse['token'].toString().isNotEmpty) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Mybottomnavigationbar()),
+          );
+        }
       } else {
         print('Lỗi: ${response.statusCode}');
       }
     } catch (e) {
       print('Lỗi: ${e.toString()}');
     }
+  }
+
+  void updateData(Map<String, dynamic> mapResponse) async {
+    final pref = await SharedPreferences.getInstance();
+    pref.setString('name', mapResponse['Name']);
+  }
+
+  // void initState() {
+  //   getValidationData().whenComplete(() async {
+  //     Timer(Duration(seconds: 2),
+  //         () => Get.to(finalName == null ? Login() : DashBoard()));
+  //   });
+  //   super.initState();
+  // }
+
+  Future getValidationData() async {
+    final SharedPreferences sharedPreferences =
+        await SharedPreferences.getInstance();
+    sharedPreferences.setString('name', nameController.text);
+    setState(() {
+      finalName = sharedPreferences.getString('name');
+    });
+    print(finalName);
   }
 
   @override
@@ -79,26 +113,36 @@ class _LoginState extends State<Login> {
                 decoration: InputDecoration(
                   labelText: 'Mật khẩu',
                   border: OutlineInputBorder(),
-                ),
-                obscureText: true,
-              ),
-              SizedBox(height: 20),
-              Row(
-                children: [
-                  Checkbox(
-                    value: keepLoggedIn,
-                    onChanged: (bool? value) {
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      obscureText ? Icons.visibility : Icons.visibility_off,
+                    ),
+                    onPressed: () {
                       setState(() {
-                        keepLoggedIn = value ?? false;
+                        obscureText = !obscureText;
                       });
                     },
                   ),
-                  Text('Giữ đăng nhập'),
-                ],
+                ),
+                obscureText: obscureText,
               ),
+              // SizedBox(height: 20),
+              // Row(
+              //   children: [
+              //     Checkbox(
+              //       value: keepLoggedIn,
+              //       onChanged: (bool? value) {
+              //         setState(() {
+              //           keepLoggedIn = value ?? false;
+              //         });
+              //       },
+              //     ),
+              //     Text('Giữ đăng nhập'),
+              //   ],
+              // ),
               SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   login(emailController.text, passwordController.text);
                 },
                 style: ElevatedButton.styleFrom(

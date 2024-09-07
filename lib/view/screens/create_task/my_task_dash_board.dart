@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:work_flow/themes/primarycolor.dart';
 import 'package:work_flow/view/screens/create_task/create_task.dart';
+import 'package:work_flow/view/screens/create_workflow/create_workflow.dart';
 
 class MyTaskDashBoard extends StatefulWidget {
   const MyTaskDashBoard({super.key});
@@ -33,11 +34,54 @@ class _MyTaskDashBoardState extends State<MyTaskDashBoard>
           'Task',
           style: TextStyle(color: Colors.black),
         ),
+        actions: [
+          Container(
+            child: PopupMenuButton(
+              icon: const Icon(Icons.more_vert, color: Colors.black),
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Tạo workflow'),
+                      const Icon(Icons.table_chart_outlined),
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const CreateWorkflow(),
+                      ),
+                    );
+                  },
+                ),
+                PopupMenuItem(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Tạo stage'),
+                      const Icon(Icons.card_travel_outlined),
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const CreateTask(),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
         centerTitle: true,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(48),
           child: Container(
-            color: AppColor.greyColor,
+            color: Colors.grey[200],
             child: TabBar(
               controller: _tabController,
               indicatorColor: AppColor.yellowColor,

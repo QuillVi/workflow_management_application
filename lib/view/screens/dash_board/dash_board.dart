@@ -2,8 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:work_flow/themes/primarycolor.dart';
 import 'package:work_flow/view/screens/chat/chat_dash_board.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class DashBoard extends StatefulWidget {
   const DashBoard({super.key});
@@ -12,8 +15,29 @@ class DashBoard extends StatefulWidget {
   State<DashBoard> createState() => _DashBoardState();
 }
 
+Map mapResponse = {};
+String nameUser = '';
+
 class _DashBoardState extends State<DashBoard> {
   int? selectedDateIndex;
+
+  void getData() async {
+    final pref = await SharedPreferences.getInstance();
+    setState(() {
+      nameUser = pref.getString(
+            'name',
+          ) ??
+          'not found';
+    });
+
+    print('nameUser $nameUser');
+  }
+
+  @override
+  void initState() {
+    getData();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,10 +55,12 @@ class _DashBoardState extends State<DashBoard> {
                   child: Image.asset('lib/images/user.png'),
                 ),
                 const SizedBox(width: 10),
-                const Text(
-                  'Xin chào , Vi',
-                  style: TextStyle(color: Colors.black),
-                ),
+                Container(
+                  child: Text(
+                    'Xin chào, $nameUser',
+                    style: TextStyle(color: Colors.black, fontSize: 18),
+                  ),
+                )
               ],
             ),
             actions: [
