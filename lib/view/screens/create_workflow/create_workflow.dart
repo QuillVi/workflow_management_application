@@ -58,9 +58,19 @@ class _CreateWorkflowState extends State<CreateWorkflow> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Workflow 1',
-                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => InfoCreateWorkflow(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          'Workflow 1',
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
                       ),
                       SizedBox(width: 8),
                       PopupMenuButton(

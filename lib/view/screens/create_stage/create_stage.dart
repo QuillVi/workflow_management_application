@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:work_flow/themes/primarycolor.dart';
-import 'package:work_flow/view/screens/create_stage/create_stage.dart';
 
-class InfoCreateWorkflow extends StatefulWidget {
-  const InfoCreateWorkflow({super.key});
+class CreateStage extends StatefulWidget {
+  const CreateStage({super.key});
 
   @override
-  State<InfoCreateWorkflow> createState() => _InfoCreateWorkflowState();
+  State<CreateStage> createState() => _CreateStageState();
 }
 
-class _InfoCreateWorkflowState extends State<InfoCreateWorkflow> {
+class _CreateStageState extends State<CreateStage> {
   bool _isEditing = false;
-  String _title = 'Workflow 1';
-
+  String _title = 'Stage 1';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,13 +66,12 @@ class _InfoCreateWorkflowState extends State<InfoCreateWorkflow> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   _quickActionButton(
-                      Icons.check_circle, 'Thêm Stage', Colors.green),
-                  // _quickActionButton(
-                  //     Icons.attach_file, 'Chức năng', Colors.blue),
-                  // _quickActionButton(Icons.person, 'Chức năng', Colors.purple),
+                      Icons.check_circle, 'Thêm Job', Colors.green),
+                  _quickActionButton(
+                      Icons.person_add, 'Người dùng', Colors.purple),
                 ],
               ),
               SizedBox(height: 20),
@@ -208,14 +204,7 @@ class _InfoCreateWorkflowState extends State<InfoCreateWorkflow> {
           borderRadius: BorderRadius.circular(8.0),
         ),
       ),
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CreateStage(),
-          ),
-        );
-      },
+      onPressed: () {},
       child: Column(
         children: [
           Icon(icon, color: color),
