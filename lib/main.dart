@@ -1,6 +1,5 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:work_flow/view/screens/dash_board/mybottomnavigationbar.dart';
 import 'package:work_flow/view/screens/splash_creen/splash_creen_word_group_1.dart';
 
 void main() {

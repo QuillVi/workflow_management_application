@@ -29,8 +29,6 @@ class _DashBoardState extends State<DashBoard> {
           ) ??
           'not found';
     });
-
-    print('nameUser $nameUser');
   }
 
   @override

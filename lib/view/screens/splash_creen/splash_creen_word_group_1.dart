@@ -30,115 +30,118 @@ class _SplashCreenWordGroup1State extends State<SplashCreenWordGroup1> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          Expanded(
-            child: PageView.builder(
-              controller: _controller,
-              itemCount: contents.length,
-              onPageChanged: (int index) {
-                setState(() {
-                  currentIndex = index;
-                });
-              },
-              itemBuilder: (_, i) {
-                return Padding(
-                  padding: EdgeInsets.only(top: 100, left: 20, right: 20),
-                  child: Column(
-                    children: [
-                      Image.asset(
-                        contents[i].image,
-                        height: 300,
-                        width: MediaQuery.of(context).size.width,
-                        fit: BoxFit.fill,
-                      ),
-                      SizedBox(height: 30),
-                      Text(
-                        contents[i].title,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              height: 550,
+              child: PageView.builder(
+                controller: _controller,
+                itemCount: contents.length,
+                onPageChanged: (int index) {
+                  setState(() {
+                    currentIndex = index;
+                  });
+                },
+                itemBuilder: (_, i) {
+                  return Padding(
+                    padding: EdgeInsets.only(top: 100, left: 20, right: 20),
+                    child: Column(
+                      children: [
+                        Image.asset(
+                          contents[i].image,
+                          height: 300,
+                          width: MediaQuery.of(context).size.width,
+                          fit: BoxFit.fill,
                         ),
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        contents[i].description,
-                      ),
-                      SizedBox(height: 10),
-                      Container(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: List.generate(
-                            contents.length,
-                            (index) => buildDot(index, context),
+                        SizedBox(height: 30),
+                        Text(
+                          contents[i].title,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-          SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 100),
-            child: Container(
-              child: Column(
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Rigister(),
+                        SizedBox(height: 10),
+                        Text(
+                          contents[i].description,
                         ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColor.primaryColor, // Button color
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 150, vertical: 5),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                    ),
-                    child: Text(
-                      'Đăng ký',
-                      style:
-                          TextStyle(fontSize: 16, color: AppColor.whiteColor),
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  OutlinedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Login(),
+                        SizedBox(height: 10),
+                        Container(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List.generate(
+                              contents.length,
+                              (index) => buildDot(index, context),
+                            ),
+                          ),
                         ),
-                      );
-                    },
-                    style: OutlinedButton.styleFrom(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 140, vertical: 5),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6),
-                      ),
+                      ],
                     ),
-                    child: Text(
-                      'Đăng nhập',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: AppColor.primaryColor,
-                      ),
-                    ),
-                  ),
-                ],
+                  );
+                },
               ),
             ),
-          )
-        ],
+            SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 100),
+              child: Container(
+                child: Column(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Rigister(),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColor.primaryColor,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 150, vertical: 5),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                      ),
+                      child: Text(
+                        'Đăng ký',
+                        style:
+                            TextStyle(fontSize: 16, color: AppColor.whiteColor),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    OutlinedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Login(),
+                          ),
+                        );
+                      },
+                      style: OutlinedButton.styleFrom(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 140, vertical: 5),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                      ),
+                      child: Text(
+                        'Đăng nhập',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: AppColor.primaryColor,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

@@ -27,7 +27,7 @@ class _LoginState extends State<Login> {
   void login(String email, String password) async {
     try {
       final response =
-          await post(Uri.parse('http://192.168.1.103:3000/api/login'), body: {
+          await post(Uri.parse('http://192.168.1.3:3000/api/login'), body: {
         'username': email,
         'password': password,
       });
@@ -35,8 +35,10 @@ class _LoginState extends State<Login> {
       if (response.statusCode == 200) {
         Map<String, dynamic> mapResponse = jsonDecode(response.body);
         updateData(mapResponse);
-        print(' ${mapResponse['Name']}');
+        //print(' ${mapResponse['Name']}');
         if (mapResponse['token'].toString().isNotEmpty) {
+          final prefs = await SharedPreferences.getInstance();
+          prefs.setString('token', mapResponse['token']);
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => Mybottomnavigationbar()),
@@ -50,18 +52,27 @@ class _LoginState extends State<Login> {
     }
   }
 
+  Future<bool> isLoggedIn() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token') != null;
+  }
+
+  void initState() {
+    super.initState();
+    isLoggedIn().then((isLoggedIn) {
+      if (isLoggedIn) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => Mybottomnavigationbar()),
+        );
+      }
+    });
+  }
+
   void updateData(Map<String, dynamic> mapResponse) async {
     final pref = await SharedPreferences.getInstance();
     pref.setString('name', mapResponse['Name']);
   }
-
-  // void initState() {
-  //   getValidationData().whenComplete(() async {
-  //     Timer(Duration(seconds: 2),
-  //         () => Get.to(finalName == null ? Login() : DashBoard()));
-  //   });
-  //   super.initState();
-  // }
 
   Future getValidationData() async {
     final SharedPreferences sharedPreferences =

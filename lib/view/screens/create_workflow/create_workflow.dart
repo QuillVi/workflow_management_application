@@ -22,9 +22,13 @@ class _CreateWorkflowState extends State<CreateWorkflow> {
             Navigator.pop(context);
           },
         ),
+        title: Text(
+          'Create Workflow',
+          style: TextStyle(color: Colors.black, fontSize: 18),
+        ),
         actions: [
           IconButton(
-            icon: Icon(Icons.view_list_outlined, color: Colors.black),
+            icon: Icon(Icons.add, color: Colors.black),
             onPressed: () {},
           ),
           IconButton(
@@ -38,12 +42,12 @@ class _CreateWorkflowState extends State<CreateWorkflow> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              padding: EdgeInsets.all(16),
+              padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: Colors.black,
                 borderRadius: BorderRadius.circular(10),
@@ -55,59 +59,86 @@ class _CreateWorkflowState extends State<CreateWorkflow> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Workflow',
+                        'Workflow 1',
                         style: TextStyle(color: Colors.white, fontSize: 16),
                       ),
                       SizedBox(width: 8),
-                      Icon(
-                        Icons.more_horiz,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 8),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => InfoCreateWorkflow()),
-                      );
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[800],
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Row(
-                        children: [
-                          Text(
-                            'Thẻ không có tiêu đề',
-                            style: TextStyle(color: Colors.white, fontSize: 14),
+                      PopupMenuButton(
+                        icon: const Icon(Icons.more_horiz, color: Colors.white),
+                        itemBuilder: (context) => [
+                          PopupMenuItem(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text('Thêm stage'),
+                                const Icon(Icons.table_chart_outlined),
+                              ],
+                            ),
+                            onTap: () {},
+                          ),
+                          PopupMenuItem(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text('Xoá workflow'),
+                                const Icon(Icons.delete_outline),
+                              ],
+                            ),
+                            onTap: () {},
                           ),
                         ],
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Column(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[800],
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Stage 1',
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 14),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  GestureDetector(
-                    onTap: () {},
-                    child: Text(
-                      '+ Thêm thẻ',
-                      style: TextStyle(color: Colors.white, fontSize: 14),
-                    ),
-                  ),
+                      SizedBox(height: 8),
+                      Container(
+                        padding: EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[800],
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Stage 2',
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 14),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )
                 ],
-              ),
-            ),
-            Spacer(),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Icon(Icons.search, color: Colors.white, size: 30),
               ),
             ),
           ],

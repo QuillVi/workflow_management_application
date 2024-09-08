@@ -19,8 +19,47 @@ class _RigisterState extends State<Rigister> {
   final TextEditingController confirmPasswordController =
       TextEditingController();
 
+  final _formKey = GlobalKey<FormState>();
+  String _email = '';
+  String _password = '';
+  String _confirmPassword = '';
+  String _name = '';
+
+  String _emailError = '';
+  String _passwordError = '';
+  String _confirmPasswordError = '';
+  String _nameError = '';
   void register(String name, String email, String password,
       String confirmPassword) async {
+    final RegExp emailRegex =
+        RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+    if (!emailRegex.hasMatch(email)) {
+      setState(() {
+        _emailError = 'Email không đúng định dạng!\n';
+      });
+      return;
+    }
+
+    if (password.length < 8) {
+      setState(() {
+        _passwordError = 'Password phải đủ 8 ký tự!\n';
+      });
+      return;
+    }
+    if (password != confirmPassword) {
+      setState(() {
+        _confirmPasswordError = 'Mật khẩu xác nhận không khớp!\n';
+      });
+      return;
+    }
+
+    if (name.isEmpty) {
+      setState(() {
+        _nameError = 'Vui lý nhap ho_ten!\n';
+      });
+      return;
+    }
+
     try {
       final response =
           await post(Uri.parse('http://192.168.1.3:3000/api/register'), body: {
@@ -37,7 +76,7 @@ class _RigisterState extends State<Rigister> {
           MaterialPageRoute(builder: (context) => Login()),
         );
       } else {
-        print('Tạo tài khoản thất bại!');
+        print('Đăng ký thể bằng thấy tên hoặc mật khẩu');
       }
     } catch (e) {
       if (e is SocketException) {
@@ -50,7 +89,6 @@ class _RigisterState extends State<Rigister> {
 
   @override
   void dispose() {
-    // Dọn dẹp bộ điều khiển khi widget bị hủy
     nameController.dispose();
     emailController.dispose();
     passwordController.dispose();
@@ -62,104 +100,147 @@ class _RigisterState extends State<Rigister> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Center(
+      body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Tạo tài khoản',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 20),
-              TextField(
-                controller: nameController,
-                decoration: InputDecoration(
-                  labelText: 'Họ và tên',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              SizedBox(height: 20),
-              TextField(
-                controller: emailController,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.emailAddress,
-              ),
-              SizedBox(height: 20),
-              TextField(
-                controller: passwordController,
-                decoration: InputDecoration(
-                  labelText: 'Mật khẩu',
-                  border: OutlineInputBorder(),
-                ),
-                obscureText: true,
-              ),
-              SizedBox(height: 20),
-              TextField(
-                controller: confirmPasswordController,
-                decoration: InputDecoration(
-                  labelText: 'Nhập lại mật khẩu',
-                  border: OutlineInputBorder(),
-                ),
-                obscureText: true,
-              ),
-              SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: () {
-                  register(
-                    nameController.text.toString(),
-                    emailController.text.toString(),
-                    passwordController.text.toString(),
-                    confirmPasswordController.text.toString(),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColor.primaryColor, // Màu nền của nút
-                  padding: EdgeInsets.symmetric(vertical: 15),
-                  minimumSize: Size(double.infinity, 50), // Chiều rộng của nút
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 100),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Tạo tài khoản',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                child: Text(
-                  'Tạo tài khoản',
-                  style: TextStyle(fontSize: 16, color: AppColor.whiteColor),
+                SizedBox(height: 20),
+                TextFormField(
+                  controller: nameController,
+                  decoration: InputDecoration(
+                    labelText: 'Họ và tên',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value?.isEmpty ?? false) {
+                      return 'Vui lòng nhập tên';
+                    }
+                    return null;
+                  },
+                  onSaved: (value) => _name = value!,
                 ),
-              ),
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Bạn đã có tài khoản?'),
-                  SizedBox(width: 5),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Login(),
-                        ),
-                      );
-                    },
-                    child: Text(
-                      'đăng nhập',
-                      style: TextStyle(
-                        color: AppColor.primaryColor,
-                        fontWeight: FontWeight.bold,
-                      ),
+                SizedBox(height: 20),
+                TextFormField(
+                  controller: emailController,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (value) {
+                    if (value?.isEmpty ?? true) {
+                      return 'Vui lòng nhập email';
+                    }
+                    return null;
+                  },
+                  onSaved: (value) => _email = value!,
+                ),
+                SizedBox(height: 20),
+                TextFormField(
+                  controller: passwordController,
+                  decoration: InputDecoration(
+                    labelText: 'Mật khẩu',
+                    border: OutlineInputBorder(),
+                  ),
+                  obscureText: true,
+                  validator: (value) {
+                    if (value?.isEmpty ?? true) {
+                      return 'Vui lòng nhập mật khẩu';
+                    }
+                    return null;
+                  },
+                  onSaved: (value) => _password = value!,
+                ),
+                SizedBox(height: 20),
+                TextFormField(
+                  controller: confirmPasswordController,
+                  decoration: InputDecoration(
+                    labelText: 'Nhập lại mật khẩu',
+                    border: OutlineInputBorder(),
+                  ),
+                  obscureText: true,
+                  validator: (value) {
+                    if (value?.isEmpty ?? true) {
+                      return 'Vui lòng nhập xác nhận mật khẩu';
+                    }
+                    return null;
+                  },
+                  onSaved: (value) => _confirmPassword = value!,
+                ),
+                SizedBox(height: 30),
+                ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState?.validate() ?? false) {
+                      _formKey.currentState?.save();
+                      if (nameController.text.isEmpty ||
+                          emailController.text.isEmpty ||
+                          passwordController.text.isEmpty ||
+                          confirmPasswordController.text.isEmpty) {
+                        print(_nameError);
+                        print(_emailError);
+                        print(_passwordError);
+                        print(_confirmPasswordError);
+                      }
+                    }
+                    register(
+                      nameController.text.toString(),
+                      emailController.text.toString(),
+                      passwordController.text.toString(),
+                      confirmPasswordController.text.toString(),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColor.primaryColor,
+                    padding: EdgeInsets.symmetric(vertical: 15),
+                    minimumSize: Size(double.infinity, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6),
                     ),
                   ),
-                ],
-              ),
-            ],
+                  child: Text(
+                    'Tạo tài khoản',
+                    style: TextStyle(fontSize: 16, color: AppColor.whiteColor),
+                  ),
+                ),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Bạn đã có tài khoản?'),
+                    SizedBox(width: 5),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Login(),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        'đăng nhập',
+                        style: TextStyle(
+                          color: AppColor.primaryColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

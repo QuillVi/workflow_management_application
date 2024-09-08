@@ -9,6 +9,9 @@ class InfoCreateWorkflow extends StatefulWidget {
 }
 
 class _InfoCreateWorkflowState extends State<InfoCreateWorkflow> {
+  bool _isEditing = false;
+  String _title = 'Workflow 1';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,19 +27,31 @@ class _InfoCreateWorkflowState extends State<InfoCreateWorkflow> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Tên workflow',
-              style: TextStyle(color: Colors.black, fontSize: 18),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  _isEditing = true;
+                });
+              },
+              child: _isEditing
+                  ? TextFormField(
+                      initialValue: _title,
+                      style: TextStyle(color: Colors.black, fontSize: 18),
+                      onFieldSubmitted: (value) {
+                        setState(() {
+                          _title = value;
+                          _isEditing = false;
+                        });
+                      },
+                    )
+                  : Text(
+                      _title,
+                      style: TextStyle(color: Colors.black, fontSize: 18),
+                    ),
             ),
           ],
         ),
         actions: [
-          IconButton(
-            icon: Icon(Icons.person_add, color: Colors.black),
-            onPressed: () {
-              // Xử lý thêm người
-            },
-          ),
           IconButton(
             icon: Icon(Icons.more_vert, color: Colors.black),
             onPressed: () {
@@ -52,11 +67,6 @@ class _InfoCreateWorkflowState extends State<InfoCreateWorkflow> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Các thao tác nhanh',
-                style: TextStyle(color: Colors.black, fontSize: 16),
-              ),
-              SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -67,13 +77,53 @@ class _InfoCreateWorkflowState extends State<InfoCreateWorkflow> {
                   _quickActionButton(Icons.person, 'Thành viên', Colors.purple),
                 ],
               ),
-              Divider(color: Colors.grey),
-              SizedBox(height: 10),
-              _buildListItem(Icons.list, 'Thêm mô tả...'),
-              _buildListItem(Icons.access_time, 'Ngày bắt đầu...'),
-              _buildListItem(Icons.calendar_today, 'Ngày hết hạn...'),
-              _buildListItem(Icons.label, 'Các nhãn...'),
-              _buildListItem(Icons.person_outline, 'Các thành viên...'),
+              SizedBox(height: 20),
+              Container(
+                padding: EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Workflow 1',
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
+                        SizedBox(width: 8),
+                        Icon(
+                          Icons.more_horiz,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    GestureDetector(
+                      onTap: () {},
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[800],
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Row(
+                          children: [
+                            Text(
+                              'Thêm stages',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 14),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -103,25 +153,6 @@ class _InfoCreateWorkflowState extends State<InfoCreateWorkflow> {
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.black, fontSize: 12),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildListItem(IconData icon, String text) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12.0),
-      child: Row(
-        children: [
-          Icon(
-            icon,
-            color: AppColor.greyColor,
-          ),
-          SizedBox(width: 10),
-          Text(
-            text,
-            style: TextStyle(color: Colors.black, fontSize: 14),
           ),
         ],
       ),

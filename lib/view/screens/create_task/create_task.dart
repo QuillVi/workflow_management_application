@@ -51,199 +51,210 @@ class _CreateTaskState extends State<CreateTask> {
         ),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            SizedBox(
-              height: 50,
-              child: TextField(
-                decoration: InputDecoration(
-                  labelText: 'Task name *',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              SizedBox(
+                height: 50,
+                child: TextField(
+                  decoration: InputDecoration(
+                    labelText: 'Task name',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-            AppDropdown<String>(
-              label: 'Project',
-              dropdownMenuItemList: listProject
-                  .map(
-                    (e) => _itemDropdown(e),
-                  )
-                  .toList(),
-              onChanged: (newValue) {
-                setState(() {
-                  _selectedProject = newValue;
-                });
-              },
-              hint: "Chọn Project",
-              value: _selectedProject,
-            ),
-            const SizedBox(height: 16),
-            AppDropdown<String>(
-              label: 'Task type',
-              dropdownMenuItemList: listTaskType
-                  .map(
-                    (e) => _itemDropdown(e),
-                  )
-                  .toList(),
-              onChanged: (newValue) {
-                setState(() {
-                  _selectedTaskType = newValue;
-                });
-              },
-              hint: 'Task type',
-              value: _selectedTaskType,
-            ),
-            const SizedBox(height: 16),
-            AppDropdown<String>(
-              label: 'Priority',
-              dropdownMenuItemList: listPriority
-                  .map(
-                    (e) => _itemDropdown(e),
-                  )
-                  .toList(),
-              onChanged: (newValue) {
-                setState(() {
-                  _selectedPriority = newValue;
-                });
-              },
-              hint: "Chọn Priority",
-              value: _selectedPriority,
-            ),
-            const SizedBox(height: 16),
-            AppDropdown<String>(
-              label: 'Status',
-              dropdownMenuItemList: listStatus
-                  .map(
-                    (e) => _itemDropdown(e),
-                  )
-                  .toList(),
-              onChanged: (newValue) {
-                setState(() {
-                  _selectedStatus = newValue;
-                });
-              },
-              hint: "Chọn Status",
-              value: _selectedStatus,
-            ),
-            const SizedBox(height: 16),
-            AppDropdown<String>(
-              label: 'Người yêu cầu',
-              dropdownMenuItemList: listRequester
-                  .map(
-                    (e) => _itemDropdown(e),
-                  )
-                  .toList(),
-              onChanged: (newValue) {
-                setState(() {
-                  _selectedRequester = newValue;
-                });
-              },
-              hint: 'Người yêu cầu',
-              value: _selectedRequester,
-            ),
-            const SizedBox(height: 16),
-            AppDropdown<String>(
-              label: 'Chỉ định xử lý',
-              dropdownMenuItemList: listAssign
-                  .map(
-                    (e) => _itemDropdown(e),
-                  )
-                  .toList(),
-              onChanged: (newValue) {
-                setState(() {
-                  _selectedAssignee = newValue;
-                });
-              },
-              hint: 'Chỉ định xử lý',
-              value: _selectedAssignee,
-            ),
-            const SizedBox(height: 16),
-            InkWell(
-              onTap: () {
-                showDatePicker(
-                  context: context,
-                  initialDate: _selectedDateStart,
-                  firstDate: DateTime(2020),
-                  lastDate: DateTime(2030),
-                ).then((picked) {
-                  if (picked != null) {
-                    setState(() {
-                      _selectedDateStart = picked;
-                    });
-                  }
-                });
-              },
-              child: AppDropdown<String>(
-                label: 'Ngày bắt đầu',
-                dropdownMenuItemList: [],
-                onChanged: (newValue) {},
-                hint: _selectedDateStart == null
-                    ? ''
-                    : DateFormat('dd-MM-yyyy').format(_selectedDateStart),
-                value: _selectedDateStart == null
-                    ? ''
-                    : DateFormat('dd-MM-yyyy').format(_selectedDateStart),
-              ),
-            ),
-            const SizedBox(height: 16),
-            InkWell(
-              onTap: () {
-                showDatePicker(
-                  context: context,
-                  initialDate: _selectedDateEnd,
-                  firstDate: DateTime(2020),
-                  lastDate: DateTime(2030),
-                ).then((picked) {
-                  if (picked != null) {
-                    setState(() {
-                      _selectedDateEnd = picked;
-                    });
-                  }
-                });
-              },
-              child: AppDropdown<String>(
-                label: 'Ngày kết thúc',
-                dropdownMenuItemList: [],
-                onChanged: (newValue) {},
-                hint: _selectedDateEnd == null
-                    ? ''
-                    : DateFormat('dd-MM-yyyy').format(_selectedDateEnd),
-                value: _selectedDateEnd == null
-                    ? ''
-                    : DateFormat('dd-MM-yyyy').format(_selectedDateEnd),
-              ),
-            ),
-            const SizedBox(height: 16),
-            const Spacer(),
-            InkWell(
-              onTap: () {
-                ShowSnackBarCustom.showSnackBar(
-                    this.context,
-                    'Success',
-                    AppColor.greenColor,
-                    const Icon(
-                      Icons.check,
-                      color: Colors.white,
-                    ));
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                width: double.infinity,
-                decoration: BoxDecoration(
-                    color: AppColor.primaryColor,
-                    borderRadius: BorderRadius.circular(16)),
-                child: const Center(
-                  child: Text('Create Task',
-                      style: TextStyle(fontSize: 16, color: Colors.white)),
+              const SizedBox(height: 16),
+              TextField(
+                decoration: InputDecoration(
+                  labelText: 'Description',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  hintMaxLines: 5,
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 16),
+              AppDropdown<String>(
+                label: 'Project',
+                dropdownMenuItemList: listProject
+                    .map(
+                      (e) => _itemDropdown(e),
+                    )
+                    .toList(),
+                onChanged: (newValue) {
+                  setState(() {
+                    _selectedProject = newValue;
+                  });
+                },
+                hint: "Chọn Project",
+                value: _selectedProject,
+              ),
+              const SizedBox(height: 16),
+              AppDropdown<String>(
+                label: 'Task type',
+                dropdownMenuItemList: listTaskType
+                    .map(
+                      (e) => _itemDropdown(e),
+                    )
+                    .toList(),
+                onChanged: (newValue) {
+                  setState(() {
+                    _selectedTaskType = newValue;
+                  });
+                },
+                hint: 'Task type',
+                value: _selectedTaskType,
+              ),
+              const SizedBox(height: 16),
+              AppDropdown<String>(
+                label: 'Priority',
+                dropdownMenuItemList: listPriority
+                    .map(
+                      (e) => _itemDropdown(e),
+                    )
+                    .toList(),
+                onChanged: (newValue) {
+                  setState(() {
+                    _selectedPriority = newValue;
+                  });
+                },
+                hint: "Chọn Priority",
+                value: _selectedPriority,
+              ),
+              const SizedBox(height: 16),
+              AppDropdown<String>(
+                label: 'Status',
+                dropdownMenuItemList: listStatus
+                    .map(
+                      (e) => _itemDropdown(e),
+                    )
+                    .toList(),
+                onChanged: (newValue) {
+                  setState(() {
+                    _selectedStatus = newValue;
+                  });
+                },
+                hint: "Chọn Status",
+                value: _selectedStatus,
+              ),
+              const SizedBox(height: 16),
+              AppDropdown<String>(
+                label: 'Người yêu cầu',
+                dropdownMenuItemList: listRequester
+                    .map(
+                      (e) => _itemDropdown(e),
+                    )
+                    .toList(),
+                onChanged: (newValue) {
+                  setState(() {
+                    _selectedRequester = newValue;
+                  });
+                },
+                hint: 'Người yêu cầu',
+                value: _selectedRequester,
+              ),
+              const SizedBox(height: 16),
+              AppDropdown<String>(
+                label: 'Chỉ định xử lý',
+                dropdownMenuItemList: listAssign
+                    .map(
+                      (e) => _itemDropdown(e),
+                    )
+                    .toList(),
+                onChanged: (newValue) {
+                  setState(() {
+                    _selectedAssignee = newValue;
+                  });
+                },
+                hint: 'Chỉ định xử lý',
+                value: _selectedAssignee,
+              ),
+              const SizedBox(height: 16),
+              InkWell(
+                onTap: () {
+                  showDatePicker(
+                    context: context,
+                    initialDate: _selectedDateStart,
+                    firstDate: DateTime(2020),
+                    lastDate: DateTime(2030),
+                  ).then((picked) {
+                    if (picked != null) {
+                      setState(() {
+                        _selectedDateStart = picked;
+                      });
+                    }
+                  });
+                },
+                child: AppDropdown<String>(
+                  label: 'Ngày bắt đầu',
+                  dropdownMenuItemList: [],
+                  onChanged: (newValue) {},
+                  hint: _selectedDateStart == null
+                      ? ''
+                      : DateFormat('dd-MM-yyyy').format(_selectedDateStart),
+                  value: _selectedDateStart == null
+                      ? ''
+                      : DateFormat('dd-MM-yyyy').format(_selectedDateStart),
+                ),
+              ),
+              const SizedBox(height: 16),
+              InkWell(
+                onTap: () {
+                  showDatePicker(
+                    context: context,
+                    initialDate: _selectedDateEnd,
+                    firstDate: DateTime(2020),
+                    lastDate: DateTime(2030),
+                  ).then((picked) {
+                    if (picked != null) {
+                      setState(() {
+                        _selectedDateEnd = picked;
+                      });
+                    }
+                  });
+                },
+                child: AppDropdown<String>(
+                  label: 'Ngày kết thúc',
+                  dropdownMenuItemList: [],
+                  onChanged: (newValue) {},
+                  hint: _selectedDateEnd == null
+                      ? ''
+                      : DateFormat('dd-MM-yyyy').format(_selectedDateEnd),
+                  value: _selectedDateEnd == null
+                      ? ''
+                      : DateFormat('dd-MM-yyyy').format(_selectedDateEnd),
+                ),
+              ),
+              const SizedBox(height: 16),
+              InkWell(
+                onTap: () {
+                  ShowSnackBarCustom.showSnackBar(
+                      this.context,
+                      'Success',
+                      AppColor.greenColor,
+                      const Icon(
+                        Icons.check,
+                        color: Colors.white,
+                      ));
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      color: AppColor.primaryColor,
+                      borderRadius: BorderRadius.circular(16)),
+                  child: const Center(
+                    child: Text('Create Task',
+                        style: TextStyle(fontSize: 16, color: Colors.white)),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
