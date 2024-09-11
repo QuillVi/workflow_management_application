@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:work_flow/themes/primarycolor.dart';
 import 'package:work_flow/view/screens/create_stage/create_stage.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class InfoCreateWorkflow extends StatefulWidget {
-  const InfoCreateWorkflow({super.key});
+  final int workflowId;
+  const InfoCreateWorkflow({super.key, required this.workflowId});
 
   @override
   State<InfoCreateWorkflow> createState() => _InfoCreateWorkflowState();
@@ -12,6 +15,25 @@ class InfoCreateWorkflow extends StatefulWidget {
 class _InfoCreateWorkflowState extends State<InfoCreateWorkflow> {
   bool _isEditing = false;
   String _title = 'Workflow 1';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadWorkflow();
+  }
+
+  Future<void> _loadWorkflow() async {
+    final response = await http.get(
+        Uri.parse('http://192.168.1.3:3000/api/workFlow/${widget.workflowId}'));
+    if (response.statusCode == 200) {
+      final jsonData = jsonDecode(response.body);
+      setState(() {
+        _title = jsonData['Name'];
+      });
+    } else {
+      print('Failed to load workflow');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

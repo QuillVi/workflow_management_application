@@ -35,7 +35,6 @@ class _LoginState extends State<Login> {
       if (response.statusCode == 200) {
         Map<String, dynamic> mapResponse = jsonDecode(response.body);
         updateData(mapResponse);
-        //print(' ${mapResponse['Name']}');
         if (mapResponse['token'].toString().isNotEmpty) {
           final prefs = await SharedPreferences.getInstance();
           prefs.setString('token', mapResponse['token']);
