@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:work_flow/view/screens/create_workflow/create_workflow.dart';
+import 'package:work_flow/view/screens/workflows/create_workflow.dart';
 
 class CreateNewWorkflow extends StatefulWidget {
   const CreateNewWorkflow({super.key});

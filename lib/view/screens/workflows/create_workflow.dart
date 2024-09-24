@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:work_flow/view/screens/create_workflow/create_new_workflow.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:work_flow/view/screens/workflows/create_new_workflow.dart';
 import 'package:http/http.dart' as http;
-import 'package:work_flow/view/screens/create_workflow/info_create_workflow.dart';
+import 'package:work_flow/view/screens/workflows/info_create_workflow.dart';
 
 class CreateWorkflow extends StatefulWidget {
   const CreateWorkflow({super.key});
@@ -17,17 +17,32 @@ class _CreateWorkflowState extends State<CreateWorkflow> {
   List _workflows = [];
 
   Future<void> _loadWorkflows() async {
-    final response = await http
-        .get(Uri.parse('http://192.168.1.3:3000/api/workFlow/getAll'));
+    final token = await _getToken();
 
-    if (response.statusCode == 200) {
-      final jsonData = jsonDecode(response.body);
-      setState(() {
-        _workflows = jsonData;
-      });
+    if (token != null) {
+      final response = await http.get(
+        Uri.parse('http://192.168.1.3:3000/api/workFlow/getAll'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body);
+        setState(() {
+          _workflows = jsonData;
+        });
+      } else {
+        print('Failed to load workflows');
+      }
     } else {
-      print('Failed to load workflows');
+      print('Token not found');
     }
+  }
+
+  Future<String?> _getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token');
   }
 
   void initState() {
@@ -118,7 +133,8 @@ class _CreateWorkflowState extends State<CreateWorkflow> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => InfoCreateWorkflow(
-                                        workflowId: workflow['IDWorkFlow'],
+                                        workflowId:
+                                            workflow['IDWorkFlow'] ?? '',
                                       ),
                                     ),
                                   );

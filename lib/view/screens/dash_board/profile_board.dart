@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:work_flow/themes/primarycolor.dart';
-import 'package:work_flow/view/screens/create_task/my_task_dash_board.dart';
+import 'package:work_flow/view/screens/tasks/my_task_dash_board.dart';
 
 class ProfileBoard extends StatefulWidget {
   const ProfileBoard({super.key});

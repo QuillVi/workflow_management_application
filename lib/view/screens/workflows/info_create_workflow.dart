@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:work_flow/themes/primarycolor.dart';
-import 'package:work_flow/view/screens/create_stage/create_stage.dart';
+import 'package:work_flow/view/screens/stages/create_stage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class InfoCreateWorkflow extends StatefulWidget {
-  final int workflowId;
+  final dynamic workflowId;
   const InfoCreateWorkflow({super.key, required this.workflowId});
 
   @override
@@ -13,26 +14,49 @@ class InfoCreateWorkflow extends StatefulWidget {
 }
 
 class _InfoCreateWorkflowState extends State<InfoCreateWorkflow> {
+  Map<String, dynamic> jsonData = {
+    'IDWorkFlow': '1',
+    'Name': 'My Workflow',
+  };
+
   bool _isEditing = false;
-  String _title = 'Workflow 1';
+  String _title = '';
+
+  Workflow? workflow;
+
+  Future<void> _loadWorkflow() async {
+    final token = await _getToken();
+
+    if (token != null) {
+      final response = await http.get(
+        Uri.parse('http://192.168.1.3:3000/api/workFlow/${widget.workflowId}'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body);
+        setState(() {
+          _title = jsonData['Name'] ?? 'No Title';
+        });
+      } else {
+        print('Failed to load workflow');
+      }
+    } else {
+      print('Token not found');
+    }
+  }
+
+  Future<String?> _getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token');
+  }
 
   @override
   void initState() {
     super.initState();
     _loadWorkflow();
-  }
-
-  Future<void> _loadWorkflow() async {
-    final response = await http.get(
-        Uri.parse('http://192.168.1.3:3000/api/workFlow/${widget.workflowId}'));
-    if (response.statusCode == 200) {
-      final jsonData = jsonDecode(response.body);
-      setState(() {
-        _title = jsonData['Name'];
-      });
-    } else {
-      print('Failed to load workflow');
-    }
   }
 
   @override
@@ -253,6 +277,19 @@ class _InfoCreateWorkflowState extends State<InfoCreateWorkflow> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class Workflow {
+  final String IDWorkflow;
+  final String Name;
+  Workflow({required this.IDWorkflow, required this.Name});
+
+  factory Workflow.fromJson(Map<String, dynamic> json) {
+    return Workflow(
+      IDWorkflow: json['IDWorkFlow'],
+      Name: json['Name'],
     );
   }
 }

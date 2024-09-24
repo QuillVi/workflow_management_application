@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:work_flow/themes/primarycolor.dart';
-import 'package:work_flow/view/screens/create_task/create_task.dart';
-import 'package:work_flow/view/screens/create_workflow/create_workflow.dart';
+import 'package:work_flow/view/screens/groups/my_group.dart';
+import 'package:work_flow/view/screens/tasks/create_task.dart';
+import 'package:work_flow/view/screens/workflows/create_workflow.dart';
 
 class MyTaskDashBoard extends StatefulWidget {
   const MyTaskDashBoard({super.key});
@@ -60,7 +61,7 @@ class _MyTaskDashBoardState extends State<MyTaskDashBoard>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Tạo stage'),
+                      const Text('Tạo Groups'),
                       const Icon(Icons.card_travel_outlined),
                     ],
                   ),
@@ -68,7 +69,9 @@ class _MyTaskDashBoardState extends State<MyTaskDashBoard>
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const CreateTask(),
+                        builder: (context) => const MyGroups(
+                          groupId: null,
+                        ),
                       ),
                     );
                   },

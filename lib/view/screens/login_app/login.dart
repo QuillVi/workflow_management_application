@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:work_flow/themes/primarycolor.dart';
 import 'package:http/http.dart';
-import 'package:work_flow/view/screens/dash_board/dash_board.dart';
 import 'package:work_flow/view/screens/dash_board/mybottomnavigationbar.dart';
 
 class Login extends StatefulWidget {
@@ -136,20 +135,6 @@ class _LoginState extends State<Login> {
                 ),
                 obscureText: obscureText,
               ),
-              // SizedBox(height: 20),
-              // Row(
-              //   children: [
-              //     Checkbox(
-              //       value: keepLoggedIn,
-              //       onChanged: (bool? value) {
-              //         setState(() {
-              //           keepLoggedIn = value ?? false;
-              //         });
-              //       },
-              //     ),
-              //     Text('Giữ đăng nhập'),
-              //   ],
-              // ),
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
