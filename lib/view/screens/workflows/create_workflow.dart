@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:work_flow/view/screens/stages/create_stage_in_workflow.dart';
+import 'package:work_flow/view/screens/stages/stages.dart';
 import 'package:work_flow/view/screens/workflows/create_new_workflow.dart';
 import 'package:http/http.dart' as http;
 import 'package:work_flow/view/screens/workflows/info_create_workflow.dart';
@@ -15,13 +17,15 @@ class CreateWorkflow extends StatefulWidget {
 
 class _CreateWorkflowState extends State<CreateWorkflow> {
   List _workflows = [];
+  List _stages = [];
+  String baseUrl = 'http://192.168.1.3:3000/api/';
 
   Future<void> _loadWorkflows() async {
     final token = await _getToken();
 
     if (token != null) {
       final response = await http.get(
-        Uri.parse('http://192.168.1.3:3000/api/workFlow/getAll'),
+        Uri.parse('${baseUrl}/workFlow/getAll'),
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -32,12 +36,44 @@ class _CreateWorkflowState extends State<CreateWorkflow> {
         setState(() {
           _workflows = jsonData;
         });
+
+        _loadStages();
       } else {
         print('Failed to load workflows');
       }
     } else {
       print('Token not found');
     }
+  }
+
+  Future<void> _loadStages() async {
+    final token = await _getToken();
+    if (token != null) {
+      final response = await http.get(
+        Uri.parse('${baseUrl}/stage/getAll'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body);
+        setState(() {
+          _stages = jsonData;
+        });
+      } else {
+        print('Failed to load stages');
+      }
+    } else {
+      print('Token not found');
+    }
+  }
+
+  List<String> _getStagesForWorkflow(int idWorkFlow) {
+    return _stages
+        .where((stage) => stage['IDWorkFlow'] == idWorkFlow)
+        .map<String>((stage) => stage['NameStage'])
+        .toList();
   }
 
   Future<String?> _getToken() async {
@@ -93,6 +129,7 @@ class _CreateWorkflowState extends State<CreateWorkflow> {
         itemCount: _workflows.length,
         itemBuilder: (context, index) {
           final workflow = _workflows[index];
+          final stages = _getStagesForWorkflow(workflow['IDWorkFlow']);
           return Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -149,7 +186,18 @@ class _CreateWorkflowState extends State<CreateWorkflow> {
                                     const Icon(Icons.table_chart_outlined),
                                   ],
                                 ),
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          CreateStageInWorkflow(
+                                        workflowId:
+                                            workflow['IDWorkFlow'] ?? '',
+                                      ),
+                                    ),
+                                  );
+                                },
                               ),
                               PopupMenuItem(
                                 child: Row(
@@ -180,43 +228,44 @@ class _CreateWorkflowState extends State<CreateWorkflow> {
                               color: Colors.grey[800],
                               borderRadius: BorderRadius.circular(5),
                             ),
-                            child: Column(
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'Stage 1',
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 14),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Stages()),
+                                );
+                              },
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Name stage: ',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: stages.map((stage) {
+                                        return Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 4.0),
+                                          child: Text(
+                                            '  $stage',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 14),
+                                          ),
+                                        );
+                                      }).toList(),
                                     ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Container(
-                            padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[800],
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: Column(
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'Stage 2',
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 14),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ],

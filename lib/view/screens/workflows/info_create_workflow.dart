@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:work_flow/themes/primarycolor.dart';
 import 'package:work_flow/view/screens/stages/create_stage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -14,6 +13,7 @@ class InfoCreateWorkflow extends StatefulWidget {
 }
 
 class _InfoCreateWorkflowState extends State<InfoCreateWorkflow> {
+  String baseUrl = 'http://192.168.1.3:3000/api/';
   Map<String, dynamic> jsonData = {
     'IDWorkFlow': '1',
     'Name': 'My Workflow',
@@ -29,7 +29,7 @@ class _InfoCreateWorkflowState extends State<InfoCreateWorkflow> {
 
     if (token != null) {
       final response = await http.get(
-        Uri.parse('http://192.168.1.3:3000/api/workFlow/${widget.workflowId}'),
+        Uri.parse('${baseUrl}workFlow/${widget.workflowId}'),
         headers: {
           'Authorization': 'Bearer $token',
         },

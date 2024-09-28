@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:work_flow/themes/primarycolor.dart';
 import 'package:work_flow/view/screens/groups/my_group.dart';
+import 'package:work_flow/view/screens/stages/stages.dart';
 import 'package:work_flow/view/screens/tasks/create_task.dart';
 import 'package:work_flow/view/screens/workflows/create_workflow.dart';
 
@@ -72,6 +73,23 @@ class _MyTaskDashBoardState extends State<MyTaskDashBoard>
                         builder: (context) => const MyGroups(
                           groupId: null,
                         ),
+                      ),
+                    );
+                  },
+                ),
+                PopupMenuItem(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Tạo Stage'),
+                      const Icon(Icons.table_chart_outlined),
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const Stages(),
                       ),
                     );
                   },
