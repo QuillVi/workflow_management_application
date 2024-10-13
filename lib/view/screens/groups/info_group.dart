@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:work_flow/api_constants.dart';
 
 class InfoGroup extends StatefulWidget {
   final dynamic groupId;
@@ -24,7 +25,7 @@ class _InfoGroupState extends State<InfoGroup> {
 
     if (token != null) {
       final response = await http.get(
-        Uri.parse('http://192.168.1.3:3000/api/group/${widget.groupId}'),
+        Uri.parse('$baseUrl/group/${widget.groupId}'),
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -48,8 +49,7 @@ class _InfoGroupState extends State<InfoGroup> {
 
     if (token != null) {
       final response = await http.get(
-        Uri.parse(
-            'http://192.168.1.3:3000/api/group/getMember/${widget.groupId}'),
+        Uri.parse('$baseUrl/group/getMember/${widget.groupId}'),
         headers: {
           'Authorization': 'Bearer $token',
         },

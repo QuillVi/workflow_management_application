@@ -10,14 +10,14 @@ class SplashCreenWordGroup1 {
 List<SplashCreenWordGroup1> contents = [
   SplashCreenWordGroup1(
     image: "lib/images/work.png",
-    title: "Làm việc nhóm",
+    title: "Teamwork",
     description:
-        "  Dành cho nhóm giao tiếp và cộng tác\n                các dự án , vấn đề ",
+        "  For teams to communicate and collaborate on\n                        projects and issues ",
   ),
   SplashCreenWordGroup1(
     image: "lib/images/listwork.png",
-    title: " Danh sách công việc cần làm",
+    title: " To Do List",
     description:
-        "   Dễ dàng tạo và gán các mục công việc\n   cho bạn và các thành viên trong nhóm ",
+        "   Easily create and assign tasks to\n      you and your team members ",
   ),
 ];

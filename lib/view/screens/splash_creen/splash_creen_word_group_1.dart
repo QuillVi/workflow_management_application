@@ -88,29 +88,6 @@ class _SplashCreenWordGroup1State extends State<SplashCreenWordGroup1> {
               child: Container(
                 child: Column(
                   children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => Rigister(),
-                          ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColor.primaryColor,
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 150, vertical: 5),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                      ),
-                      child: Text(
-                        'Đăng ký',
-                        style:
-                            TextStyle(fontSize: 16, color: AppColor.whiteColor),
-                      ),
-                    ),
                     SizedBox(height: 10),
                     OutlinedButton(
                       onPressed: () {
@@ -127,12 +104,13 @@ class _SplashCreenWordGroup1State extends State<SplashCreenWordGroup1> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(6),
                         ),
+                        backgroundColor: AppColor.primaryColor,
                       ),
                       child: Text(
-                        'Đăng nhập',
+                        "Let's Start",
                         style: TextStyle(
                           fontSize: 16,
-                          color: AppColor.primaryColor,
+                          color: AppColor.whiteColor,
                         ),
                       ),
                     ),

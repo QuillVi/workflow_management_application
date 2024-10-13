@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:work_flow/themes/primarycolor.dart';
 import 'package:work_flow/view/screens/groups/my_group.dart';
-import 'package:work_flow/view/screens/stages/stages.dart';
+import 'package:work_flow/view/screens/jobs/job.dart';
+import 'package:work_flow/view/screens/projects/project.dart';
 import 'package:work_flow/view/screens/tasks/create_task.dart';
-import 'package:work_flow/view/screens/workflows/create_workflow.dart';
+import 'package:work_flow/view/screens/workflows/workflow.dart';
 
 class MyTaskDashBoard extends StatefulWidget {
   const MyTaskDashBoard({super.key});
@@ -21,6 +23,31 @@ class _MyTaskDashBoardState extends State<MyTaskDashBoard>
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
   }
+
+  var renderOverlay = true;
+  var visible = true;
+  var switchLabelPosition = false;
+  var extend = false;
+  var mini = false;
+  var rmicons = false;
+  var customDialRoot = false;
+  var closeManually = false;
+  var useRAnimation = true;
+  var isDialOpen = ValueNotifier<bool>(false);
+  var speedDialDirection = SpeedDialDirection.up;
+  var buttonSize = const Size(56.0, 56.0);
+  var childrenButtonSize = const Size(56.0, 56.0);
+  var selectedfABLocation = FloatingActionButtonLocation.endDocked;
+  var items = [
+    FloatingActionButtonLocation.startFloat,
+    FloatingActionButtonLocation.startDocked,
+    FloatingActionButtonLocation.centerFloat,
+    FloatingActionButtonLocation.endFloat,
+    FloatingActionButtonLocation.endDocked,
+    FloatingActionButtonLocation.startTop,
+    FloatingActionButtonLocation.centerTop,
+    FloatingActionButtonLocation.endTop,
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -41,59 +68,59 @@ class _MyTaskDashBoardState extends State<MyTaskDashBoard>
             child: PopupMenuButton(
               icon: const Icon(Icons.more_vert, color: Colors.black),
               itemBuilder: (context) => [
-                PopupMenuItem(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('Tạo workflow'),
-                      const Icon(Icons.table_chart_outlined),
-                    ],
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const CreateWorkflow(),
-                      ),
-                    );
-                  },
-                ),
-                PopupMenuItem(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('Tạo Groups'),
-                      const Icon(Icons.card_travel_outlined),
-                    ],
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const MyGroups(
-                          groupId: null,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                PopupMenuItem(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('Tạo Stage'),
-                      const Icon(Icons.table_chart_outlined),
-                    ],
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const Stages(),
-                      ),
-                    );
-                  },
-                ),
+                //   PopupMenuItem(
+                //     child: Row(
+                //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //       children: [
+                //         const Text('Tạo workflow'),
+                //         const Icon(Icons.table_chart_outlined),
+                //       ],
+                //     ),
+                //     onTap: () {
+                //       Navigator.push(
+                //         context,
+                //         MaterialPageRoute(
+                //           builder: (context) => const CreateWorkflow(),
+                //         ),
+                //       );
+                //     },
+                //   ),
+                //   PopupMenuItem(
+                //     child: Row(
+                //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //       children: [
+                //         const Text('Tạo Groups'),
+                //         const Icon(Icons.card_travel_outlined),
+                //       ],
+                //     ),
+                //     onTap: () {
+                //       Navigator.push(
+                //         context,
+                //         MaterialPageRoute(
+                //           builder: (context) => const MyGroups(
+                //             groupId: null,
+                //           ),
+                //         ),
+                //       );
+                //     },
+                //   ),
+                //   PopupMenuItem(
+                //     child: Row(
+                //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //       children: [
+                //         const Text('Tạo Project'),
+                //         const Icon(Icons.table_chart_outlined),
+                //       ],
+                //     ),
+                //     onTap: () {
+                //       Navigator.push(
+                //         context,
+                //         MaterialPageRoute(
+                //           builder: (context) => Project(),
+                //         ),
+                //       );
+                //     },
+                //   ),
               ],
             ),
           ),
@@ -172,14 +199,162 @@ class _MyTaskDashBoardState extends State<MyTaskDashBoard>
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (_) => const CreateTask()));
-        },
-        child: const Icon(Icons.add),
-        backgroundColor: AppColor.whiteColor,
-        shape: CircleBorder(side: BorderSide(color: AppColor.whiteColor)),
+      floatingActionButtonLocation: selectedfABLocation,
+      floatingActionButton: SpeedDial(
+        icon: Icons.add,
+        activeIcon: Icons.close,
+        spacing: 3,
+        mini: mini,
+        openCloseDial: isDialOpen,
+        childPadding: const EdgeInsets.all(5),
+        spaceBetweenChildren: 4,
+        dialRoot: customDialRoot
+            ? (ctx, open, toggleChildren) {
+                return ElevatedButton(
+                  onPressed: toggleChildren,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue[900],
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 22, vertical: 18),
+                  ),
+                  child: const Text(
+                    "Custom Dial Root",
+                    style: TextStyle(fontSize: 17),
+                  ),
+                );
+              }
+            : null,
+        buttonSize: buttonSize,
+        label: extend ? const Text("Open") : null,
+        activeLabel: extend ? const Text("Close") : null,
+        childrenButtonSize: childrenButtonSize,
+        visible: visible,
+        direction: speedDialDirection,
+        switchLabelPosition: switchLabelPosition,
+        closeManually: closeManually,
+        renderOverlay: renderOverlay,
+        useRotationAnimation: useRAnimation,
+        tooltip: 'Open Speed Dial',
+        heroTag: 'speed-dial-hero-tag',
+        elevation: 8.0,
+        animationCurve: Curves.elasticInOut,
+        isOpenOnStart: false,
+        shape: customDialRoot
+            ? const RoundedRectangleBorder()
+            : const StadiumBorder(),
+        children: [
+          SpeedDialChild(
+            child: !rmicons ? const Icon(Icons.group_sharp) : null,
+            backgroundColor: AppColor.primaryColor,
+            foregroundColor: Colors.white,
+            labelWidget: Container(
+              width: 100,
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Center(
+                child: Text(
+                  'Groups',
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
+            ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MyGroups(
+                    groupId: context,
+                  ),
+                ),
+              );
+            },
+          ),
+          SpeedDialChild(
+            child: !rmicons
+                ? const Icon(Icons.playlist_add_check_circle_outlined)
+                : null,
+            backgroundColor: AppColor.primaryColor,
+            foregroundColor: Colors.white,
+            labelWidget: Container(
+              width: 100,
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Center(
+                child: Text(
+                  'Workflows',
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
+            ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CreateWorkflow(),
+                ),
+              );
+            },
+          ),
+          SpeedDialChild(
+              child: !rmicons ? const Icon(Icons.work_outline) : null,
+              backgroundColor: AppColor.primaryColor,
+              foregroundColor: Colors.white,
+              labelWidget: Container(
+                width: 100,
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Center(
+                  child: Text(
+                    'Jobs',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ),
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Job(),
+                  ),
+                );
+              }),
+          SpeedDialChild(
+              child: !rmicons ? const Icon(Icons.task_outlined) : null,
+              backgroundColor: AppColor.primaryColor,
+              foregroundColor: Colors.white,
+              labelWidget: Container(
+                width: 100,
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Center(
+                  child: Text(
+                    ' Create tasks',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ),
+              ),
+              visible: true,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CreateTask(),
+                  ),
+                );
+              }),
+        ],
       ),
     );
   }
@@ -316,4 +491,8 @@ class TaskCard extends StatelessWidget {
       ),
     );
   }
+}
+
+extension EnumExt on FloatingActionButtonLocation {
+  String get value => toString().split(".")[1];
 }

@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:work_flow/view/screens/groups/create_group.dart';
 import 'package:work_flow/view/screens/groups/info_group.dart';
+import 'package:work_flow/api_constants.dart';
 
 class MyGroups extends StatefulWidget {
   final dynamic groupId;
@@ -32,7 +33,7 @@ class _MyGroupsState extends State<MyGroups> {
         'Authorization': 'Bearer $token',
       };
       final response = await http.get(
-        Uri.parse('http://192.168.1.3:3000/api/group/getDetailAllGroup/1'),
+        Uri.parse('$baseUrl/group/getDetailAllGroup/1'),
         headers: headers,
       );
 
@@ -186,6 +187,7 @@ class _MyGroupsState extends State<MyGroups> {
               child: _groups.isNotEmpty
                   ? ListView.builder(
                       itemCount: _groups.length,
+                      padding: EdgeInsets.symmetric(horizontal: 16),
                       itemBuilder: (context, index) {
                         final group = _groups[index];
                         final groupName =
@@ -204,19 +206,32 @@ class _MyGroupsState extends State<MyGroups> {
                             );
                           },
                           child: Card(
+                            elevation: 4,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            margin: EdgeInsets.only(bottom: 16),
                             child: Padding(
                               padding: const EdgeInsets.all(16.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    groupName,
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                  Row(
+                                    children: [
+                                      SizedBox(width: 16),
+                                      Expanded(
+                                        child: Text(
+                                          groupName,
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black87,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  SizedBox(height: 8),
+                                  SizedBox(height: 12),
                                   if (members.isNotEmpty)
                                     Column(
                                       crossAxisAlignment:
@@ -224,11 +239,25 @@ class _MyGroupsState extends State<MyGroups> {
                                       children: members.map((member) {
                                         final username = member['Username'] ??
                                             'Không có Username';
-                                        return Text(
-                                          username,
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.grey,
+                                        return Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 4),
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.person_outline,
+                                                color: Colors.grey,
+                                                size: 16,
+                                              ),
+                                              SizedBox(width: 8),
+                                              Text(
+                                                username,
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: Colors.grey[700],
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         );
                                       }).toList(),
@@ -238,7 +267,7 @@ class _MyGroupsState extends State<MyGroups> {
                                       'Không có thành viên',
                                       style: TextStyle(
                                         fontSize: 14,
-                                        color: Colors.grey,
+                                        color: Colors.grey[600],
                                       ),
                                     ),
                                 ],
@@ -249,7 +278,7 @@ class _MyGroupsState extends State<MyGroups> {
                       },
                     )
                   : Center(
-                      child: Text('Đang tải dữ liệu...'),
+                      child: CircularProgressIndicator(),
                     ),
             ),
           ],

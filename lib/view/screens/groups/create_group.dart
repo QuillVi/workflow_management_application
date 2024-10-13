@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:work_flow/api_constants.dart';
 
 class CreateGroup extends StatefulWidget {
   const CreateGroup({super.key});
@@ -16,7 +17,6 @@ class _CreateGroupState extends State<CreateGroup> {
   final TextEditingController emailController = TextEditingController();
   List<String> emailList = [];
 
-  String baseUrl = 'http://192.168.1.3:3000/api/group/';
   String? token;
 
   Future<void> createGroupAndAddMembers() async {
@@ -37,7 +37,7 @@ class _CreateGroupState extends State<CreateGroup> {
 
     try {
       final response = await http.post(
-        Uri.parse('${baseUrl}create'),
+        Uri.parse('$baseUrl/group/create'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -57,6 +57,7 @@ class _CreateGroupState extends State<CreateGroup> {
         await addMembersToGroup(groupId);
         Navigator.pop(context);
       } else {
+        print('Token : $token');
         print('Failed to create group: ${response.body}');
       }
     } catch (e) {
@@ -82,7 +83,7 @@ class _CreateGroupState extends State<CreateGroup> {
     try {
       final response = await http
           .post(
-            Uri.parse('${baseUrl}addMember'),
+            Uri.parse('$baseUrl/group/addMember'),
             headers: {
               'Content-Type': 'application/json',
               'Authorization': 'Bearer $token',

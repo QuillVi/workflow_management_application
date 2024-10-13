@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:work_flow/api_constants.dart';
 
 class CreateStageInWorkflow extends StatefulWidget {
   final dynamic workflowId;
@@ -13,7 +14,9 @@ class CreateStageInWorkflow extends StatefulWidget {
 }
 
 class _CreateStageInWorkflowState extends State<CreateStageInWorkflow> {
-  String baseUrl = 'http://192.168.1.3:3000/api';
+  String _description = '';
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
 
   Map<String, dynamic> jsonData = {
     'IDWorkFlow': '1',
@@ -42,6 +45,38 @@ class _CreateStageInWorkflowState extends State<CreateStageInWorkflow> {
         });
       } else {
         print('Failed to load workflow');
+      }
+    } else {
+      print('Token not found');
+    }
+  }
+
+  Future<void> _createStage() async {
+    final token = await _getToken();
+    final name = _titleController.text;
+    final description = _descriptionController.text;
+
+    if (token != null) {
+      final response = await http.post(
+        Uri.parse('$baseUrl/stage/create'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'NameStage': name,
+          'DescriptionStatus': description,
+          'IDWorkFlow': widget.workflowId,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          _titleController.clear();
+          _descriptionController.clear();
+        });
+      } else {
+        print('Sucsess to create stage: ${response.body}');
       }
     } else {
       print('Token not found');
@@ -105,6 +140,78 @@ class _CreateStageInWorkflowState extends State<CreateStageInWorkflow> {
               // Xử lý menu
             },
           ),
+        ],
+      ),
+      backgroundColor: Colors.white,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _isEditing = true;
+                    });
+                  },
+                  child: _isEditing
+                      ? TextField(
+                          controller: _titleController,
+                          decoration: InputDecoration(
+                            labelText: 'Tên Stage',
+                          ),
+                        )
+                      : Text(
+                          'Tên Stage',
+                          style:
+                              TextStyle(color: Colors.grey[600], fontSize: 18),
+                        ),
+                ),
+                SizedBox(height: 20),
+                _isEditing
+                    ? TextFormField(
+                        controller: _descriptionController,
+                        decoration: InputDecoration(
+                          labelText: 'Mô tả Stage',
+                          border: OutlineInputBorder(),
+                        ),
+                        maxLines: 5,
+                      )
+                    : Text(
+                        'Chưa có mô tả',
+                        style: TextStyle(color: Colors.grey[600], fontSize: 16),
+                      ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 50),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                alignment: Alignment.center,
+                margin: const EdgeInsets.only(right: 10),
+                height: 40,
+                width: 280,
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: TextButton(
+                  child: Text(
+                    'Tạo stage',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onPressed: () async {
+                    _createStage();
+                    Navigator.pop(context);
+                  },
+                ),
+              ),
+            ],
+          )
         ],
       ),
     );

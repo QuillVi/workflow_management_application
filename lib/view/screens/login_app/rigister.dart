@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:work_flow/themes/primarycolor.dart';
 import 'package:work_flow/view/screens/login_app/login.dart';
-import 'package:http/http.dart' as http;
 import 'dart:io';
+import 'package:work_flow/api_constants.dart';
 
 class Rigister extends StatefulWidget {
   const Rigister({super.key});
@@ -61,8 +61,7 @@ class _RigisterState extends State<Rigister> {
     }
 
     try {
-      final response =
-          await post(Uri.parse('http://192.168.1.3:3000/api/register'), body: {
+      final response = await post(Uri.parse('$baseUrl/register'), body: {
         'name': name,
         'username': email,
         'password': password,

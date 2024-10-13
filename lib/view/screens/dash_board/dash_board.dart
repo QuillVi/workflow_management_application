@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:work_flow/themes/primarycolor.dart';
-import 'package:work_flow/view/screens/chat/chat_dash_board.dart';
+import 'package:work_flow/view/screens/chats/chat_dash_board.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 

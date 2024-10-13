@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:work_flow/api_constants.dart';
 import 'package:work_flow/themes/primarycolor.dart';
 import 'package:http/http.dart';
 import 'package:work_flow/view/screens/dash_board/mybottomnavigationbar.dart';
@@ -25,8 +26,7 @@ class _LoginState extends State<Login> {
 
   void login(String email, String password) async {
     try {
-      final response =
-          await post(Uri.parse('http://192.168.1.3:3000/api/login'), body: {
+      final response = await post(Uri.parse('$baseUrl/login'), body: {
         'username': email,
         'password': password,
       });

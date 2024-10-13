@@ -1,79 +1,66 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:work_flow/view/screens/stages/create_stage_in_workflow.dart';
-import 'package:work_flow/view/screens/stages/stages.dart';
-import 'package:work_flow/view/screens/workflows/create_new_workflow.dart';
+import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:work_flow/view/screens/workflows/info_create_workflow.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:work_flow/api_constants.dart';
 
-class CreateWorkflow extends StatefulWidget {
-  const CreateWorkflow({super.key});
+class CreateNewWorkflow extends StatefulWidget {
+  const CreateNewWorkflow({super.key});
 
   @override
-  State<CreateWorkflow> createState() => _CreateWorkflowState();
+  State<CreateNewWorkflow> createState() => _CreateNewWorkflowState();
 }
 
-class _CreateWorkflowState extends State<CreateWorkflow> {
-  List _workflows = [];
-  List _stages = [];
-  String baseUrl = 'http://192.168.1.3:3000/api/';
+class _CreateNewWorkflowState extends State<CreateNewWorkflow> {
+  bool _isEditing = false;
 
-  Future<void> _loadWorkflows() async {
+  String _description = '';
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+
+  Future<void> createWorkflow() async {
     final token = await _getToken();
+    final name = _titleController.text;
+    final description = _descriptionController.text;
 
     if (token != null) {
-      final response = await http.get(
-        Uri.parse('${baseUrl}/workFlow/getAll'),
+      final response = await http.post(
+        Uri.parse('$baseUrl/workflow/create'),
         headers: {
+          'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
         },
+        body: jsonEncode({
+          'Name': name,
+          'Description': description,
+          'IDUser': 1,
+        }),
       );
 
-      if (response.statusCode == 200) {
-        final jsonData = jsonDecode(response.body);
-        setState(() {
-          _workflows = jsonData;
-        });
+      if (response.statusCode == 201) {
+        final responseBody = jsonDecode(response.body);
+        final Name = responseBody['Name'];
+        final Description = responseBody['Description'];
 
-        _loadStages();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('$Name đã tạo thành công'),
+          ),
+        );
       } else {
-        print('Failed to load workflows');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Lỗi khi tạo workflow: ${response.statusCode}'),
+          ),
+        );
       }
     } else {
-      print('Token not found');
-    }
-  }
-
-  Future<void> _loadStages() async {
-    final token = await _getToken();
-    if (token != null) {
-      final response = await http.get(
-        Uri.parse('${baseUrl}/stage/getAll'),
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Token không tồn tại, vui lòng đăng nhập lại'),
+        ),
       );
-
-      if (response.statusCode == 200) {
-        final jsonData = jsonDecode(response.body);
-        setState(() {
-          _stages = jsonData;
-        });
-      } else {
-        print('Failed to load stages');
-      }
-    } else {
-      print('Token not found');
     }
-  }
-
-  List<String> _getStagesForWorkflow(int idWorkFlow) {
-    return _stages
-        .where((stage) => stage['IDWorkFlow'] == idWorkFlow)
-        .map<String>((stage) => stage['NameStage'])
-        .toList();
   }
 
   Future<String?> _getToken() async {
@@ -81,15 +68,16 @@ class _CreateWorkflowState extends State<CreateWorkflow> {
     return prefs.getString('token');
   }
 
-  void initState() {
-    super.initState();
-    _loadWorkflows();
+  @override
+  void dispose() {
+    _descriptionController.dispose();
+    _titleController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -100,183 +88,96 @@ class _CreateWorkflowState extends State<CreateWorkflow> {
           },
         ),
         title: Text(
-          'Workflow của bạn',
+          'Workflow',
           style: TextStyle(color: Colors.black, fontSize: 18),
         ),
+        centerTitle: true,
         actions: [
           IconButton(
-            icon: Icon(Icons.add, color: Colors.black),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CreateNewWorkflow(),
+            icon: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Thêm Stage',
+                  style: TextStyle(color: Colors.black, fontSize: 12),
                 ),
-              );
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.notifications_none_outlined, color: Colors.black),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: Icon(Icons.more_vert, color: Colors.black),
+              ],
+            ),
             onPressed: () {},
           ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: _workflows.length,
-        itemBuilder: (context, index) {
-          final workflow = _workflows[index];
-          final stages = _getStagesForWorkflow(workflow['IDWorkFlow']);
-          return Padding(
-            padding: const EdgeInsets.all(16),
+      backgroundColor: Colors.white,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding: EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            workflow['Name'] ?? '',
-                            style: TextStyle(fontSize: 18, color: Colors.white),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _isEditing = true;
+                    });
+                  },
+                  child: _isEditing
+                      ? TextField(
+                          controller: _titleController,
+                          decoration: InputDecoration(
+                            labelText: 'Tên workflow',
                           ),
-                          SizedBox(width: 8),
-                          PopupMenuButton(
-                            icon: const Icon(Icons.more_horiz,
-                                color: Colors.white),
-                            itemBuilder: (context) => [
-                              PopupMenuItem(
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    const Text('Xem workflow'),
-                                    const Icon(Icons.visibility),
-                                  ],
-                                ),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => InfoCreateWorkflow(
-                                        workflowId:
-                                            workflow['IDWorkFlow'] ?? '',
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                              PopupMenuItem(
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    const Text('Thêm stage'),
-                                    const Icon(Icons.table_chart_outlined),
-                                  ],
-                                ),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          CreateStageInWorkflow(
-                                        workflowId:
-                                            workflow['IDWorkFlow'] ?? '',
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                              PopupMenuItem(
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    const Text('Xoá workflow'),
-                                    const Icon(Icons.delete_outline),
-                                  ],
-                                ),
-                                onTap: () {},
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        workflow['Description'] ?? '',
-                        style: TextStyle(color: Colors.white, fontSize: 14),
-                      ),
-                      const SizedBox(height: 8),
-                      Column(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[800],
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Stages()),
-                                );
-                              },
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Name stage: ',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: stages.map((stage) {
-                                        return Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 4.0),
-                                          child: Text(
-                                            '  $stage',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 14),
-                                          ),
-                                        );
-                                      }).toList(),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
+                        )
+                      : Text(
+                          'Tên workflow',
+                          style:
+                              TextStyle(color: Colors.grey[600], fontSize: 18),
+                        ),
                 ),
+                SizedBox(height: 20),
+                _isEditing
+                    ? TextFormField(
+                        controller: _descriptionController,
+                        decoration: InputDecoration(
+                          labelText: 'Mô tả workflow',
+                          border: OutlineInputBorder(),
+                        ),
+                        maxLines: 5,
+                      )
+                    : Text(
+                        'Chưa có mô tả',
+                        style: TextStyle(color: Colors.grey[600], fontSize: 16),
+                      ),
               ],
             ),
-          );
-        },
+          ),
+          const SizedBox(height: 50),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                alignment: Alignment.center,
+                margin: const EdgeInsets.only(right: 10),
+                height: 40,
+                width: 280,
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: TextButton(
+                  child: Text(
+                    'Tạo workflow',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onPressed: () async {
+                    createWorkflow();
+                    Navigator.pop(context);
+                  },
+                ),
+              ),
+            ],
+          )
+        ],
       ),
     );
   }
