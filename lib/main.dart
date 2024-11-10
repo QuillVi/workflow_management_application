@@ -1,18 +1,51 @@
-import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:work_flow/view/screens/dash_board/mybottomnavigationbar.dart';
 import 'package:work_flow/view/screens/splash_creen/splash_creen_word_group_1.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool _isSplashDone = false;
+  bool? _isLoggedIn;
+
+  @override
+  void initState() {
+    super.initState();
+    _startSplashScreen();
+  }
+
+  Future<void> _startSplashScreen() async {
+    await Future.delayed(const Duration(seconds: 2));
+
+    final loggedIn = await isLoggedIn();
+    setState(() {
+      _isSplashDone = true;
+      _isLoggedIn = loggedIn;
+    });
+  }
+
+  Future<bool> isLoggedIn() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token') != null;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: AnimatedSplashScreen(
+    if (!_isSplashDone) {
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: AnimatedSplashScreen(
           duration: 1500,
           splash: Center(
             child: Column(
@@ -23,24 +56,36 @@ class MyApp extends StatelessWidget {
                   height: 50,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
-                    image: DecorationImage(
+                    image: const DecorationImage(
                       image: AssetImage('lib/images/managetment.png'),
                       fit: BoxFit.fill,
                     ),
                   ),
                 ),
-                Container(
-                  child: Text(
-                    'App Managetment',
-                    style: TextStyle(fontSize: 15),
-                  ),
+                const Text(
+                  'App Managetment',
+                  style: TextStyle(fontSize: 15),
                 ),
               ],
             ),
           ),
           nextScreen: SplashCreenWordGroup1(),
           splashTransition: SplashTransition.fadeTransition,
-          backgroundColor: Colors.white),
-    );
+          backgroundColor: Colors.white,
+        ),
+      );
+    } else {
+      if (_isLoggedIn == true) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          home: Mybottomnavigationbar(),
+        );
+      } else {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          home: SplashCreenWordGroup1(),
+        );
+      }
+    }
   }
 }

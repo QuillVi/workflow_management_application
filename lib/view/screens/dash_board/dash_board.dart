@@ -3,10 +3,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:work_flow/api_constants.dart';
 import 'package:work_flow/themes/primarycolor.dart';
 import 'package:work_flow/view/screens/chats/chat_dash_board.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:work_flow/view/screens/jobs/info_job.dart';
 
 class DashBoard extends StatefulWidget {
   const DashBoard({super.key});
@@ -20,6 +23,58 @@ String nameUser = '';
 
 class _DashBoardState extends State<DashBoard> {
   int? selectedDateIndex;
+  List<dynamic> _members = [];
+  List<dynamic> _tasks = [];
+
+  Future<void> _loadTasks() async {
+    final token = await _getToken();
+    if (token != null) {
+      final response = await http.get(
+        Uri.parse('$baseUrl/job/getAll'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body);
+        setState(() {
+          _tasks = jsonData;
+        });
+      } else {
+        print('Failed to load jobs');
+      }
+    } else {
+      print('Token not found');
+    }
+  }
+
+  Future<void> loadUsers() async {
+    final token = await _getToken();
+    if (token != null) {
+      final response = await http.get(
+        Uri.parse('$baseUrl/appUser/getAll'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body);
+
+        if (jsonData is List) {
+          setState(() {
+            _members = jsonData;
+          });
+        } else {
+          print('Expected a list, but got something else');
+        }
+      } else {
+        print('Failed to load users');
+      }
+    } else {
+      print('Token not found');
+    }
+  }
 
   void getData() async {
     final pref = await SharedPreferences.getInstance();
@@ -31,9 +86,16 @@ class _DashBoardState extends State<DashBoard> {
     });
   }
 
+  Future<String?> _getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token');
+  }
+
   @override
   void initState() {
     getData();
+    loadUsers();
+    _loadTasks();
     super.initState();
   }
 
@@ -151,51 +213,77 @@ class _DashBoardState extends State<DashBoard> {
                     height: 150,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: 2,
+                      itemCount: _tasks.length,
                       itemBuilder: (context, index) {
-                        return Row(
-                          children: [
-                            TaskCard(
-                              title:
-                                  'Refresh Data Màn hình danh sách Telesales',
-                              date: '04-08/06-08',
-                              iconuser: Image.asset(
-                                'lib/images/user.png',
-                                width: 30,
-                                height: 30,
+                        final task = _tasks[index];
+                        final nameTask = task['NameJob'] ?? 'No title';
+                        final timeStart = DateTime.parse(task['TimeStart']);
+                        final timeComplete =
+                            DateTime.parse(task['TimeComplete']);
+                        final formattedDate =
+                            '${timeStart.day}-${timeStart.month}/${timeComplete.day}-${timeComplete.month}';
+
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    InfoJob(jobId: task['IDJob']),
                               ),
-                              appName: 'MICXM/FieldSale App',
-                              taskNumber: '[222]',
-                            ),
-                            const SizedBox(width: 10),
-                          ],
+                            );
+                          },
+                          child: Row(
+                            children: [
+                              TaskCard(
+                                title: nameTask,
+                                date: formattedDate,
+                                iconuser: Image.asset(
+                                  'lib/images/user.png',
+                                  width: 30,
+                                  height: 30,
+                                ),
+                                appName: 'MICXM/FieldSale App',
+                                taskNumber: '[${task['IDJob']}]',
+                              ),
+                              const SizedBox(width: 10),
+                            ],
+                          ),
                         );
                       },
                     ),
                   ),
-                  ListView(
-                    shrinkWrap: true,
-                    children: contacts.map((contact) {
-                      return ListTile(
-                        leading: CircleAvatar(
-                          backgroundImage: AssetImage('lib/images/user.png'),
-                        ),
-                        title: Text(
-                          contact.name,
-                          style: TextStyle(color: AppColor.blackColor),
-                        ),
-                        trailing: Container(
-                          width: 10,
-                          height: 10,
-                          decoration: BoxDecoration(
-                            color:
-                                contact.isOnline ? Colors.green : Colors.grey,
-                            borderRadius: BorderRadius.circular(5),
+                  Container(
+                    height: 300,
+                    width: double.infinity,
+                    child: ListView.builder(
+                      itemCount: _members.length,
+                      itemBuilder: (context, index) {
+                        final member = _members[index];
+                        final nameMember = member['Name'] ?? 'No Name';
+
+                        return GestureDetector(
+                          onTap: () {},
+                          child: Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    nameMember ?? 'No Name',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
-                        ),
-                      );
-                    }).toList(),
-                  )
+                        );
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -205,28 +293,6 @@ class _DashBoardState extends State<DashBoard> {
     );
   }
 }
-
-class Contact {
-  String name;
-  bool isOnline;
-
-  Contact({required this.name, required this.isOnline});
-}
-
-final List<Contact> contacts = [
-  Contact(name: 'Amelia', isOnline: true),
-  Contact(name: 'Alexander', isOnline: false),
-  Contact(name: 'Olivia', isOnline: true),
-  Contact(name: 'Isabella', isOnline: false),
-  Contact(name: 'Ava', isOnline: true),
-  Contact(name: 'Ethan', isOnline: true),
-  Contact(name: 'Charlotte', isOnline: false),
-  Contact(name: 'Mia', isOnline: true),
-  Contact(name: 'Harper', isOnline: false),
-  Contact(name: 'Evelyn', isOnline: true),
-  Contact(name: 'Abigail', isOnline: false),
-  Contact(name: 'Emily', isOnline: true),
-];
 
 class SummaryCard extends StatelessWidget {
   final String label;

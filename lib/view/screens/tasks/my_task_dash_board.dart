@@ -1,11 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:work_flow/api_constants.dart';
 import 'package:work_flow/themes/primarycolor.dart';
 import 'package:work_flow/view/screens/groups/my_group.dart';
-import 'package:work_flow/view/screens/jobs/job.dart';
-import 'package:work_flow/view/screens/projects/project.dart';
+import 'package:work_flow/view/screens/jobs/info_job.dart';
 import 'package:work_flow/view/screens/tasks/create_task.dart';
 import 'package:work_flow/view/screens/workflows/workflow.dart';
+import 'package:http/http.dart' as http;
 
 class MyTaskDashBoard extends StatefulWidget {
   const MyTaskDashBoard({super.key});
@@ -17,9 +21,38 @@ class MyTaskDashBoard extends StatefulWidget {
 class _MyTaskDashBoardState extends State<MyTaskDashBoard>
     with TickerProviderStateMixin {
   late TabController _tabController;
+  List<dynamic> _tasks = [];
+
+  Future<void> _loadTasks() async {
+    final token = await _getToken();
+    if (token != null) {
+      final response = await http.get(
+        Uri.parse('$baseUrl/job/getAll'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body);
+        setState(() {
+          _tasks = jsonData;
+        });
+      } else {
+        print('Failed to load jobs');
+      }
+    } else {
+      print('Token not found');
+    }
+  }
+
+  Future<String?> _getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token');
+  }
 
   @override
   void initState() {
+    _loadTasks();
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
   }
@@ -134,10 +167,10 @@ class _MyTaskDashBoardState extends State<MyTaskDashBoard>
               controller: _tabController,
               indicatorColor: AppColor.yellowColor,
               tabs: const [
-                Tab(text: 'Tuần này'),
-                Tab(text: 'Của tôi'),
                 Tab(text: 'Hôm nay'),
                 Tab(text: 'Hôm qua'),
+                Tab(text: 'Tuần này'),
+                Tab(text: 'Của tôi'),
               ],
             ),
           ),
@@ -173,30 +206,46 @@ class _MyTaskDashBoardState extends State<MyTaskDashBoard>
             ),
           ),
           Expanded(
-            child: ListView(
+            child: ListView.builder(
               padding: const EdgeInsets.all(16),
-              children: [
-                TaskCard(
-                  title: 'Refresh Data Màn hình danh sách Telesales',
-                  date: '04-08/06-08',
-                  priority: 'High',
-                  letterColor: AppColor.redColor,
-                  priorityColor: Colors.red.shade100,
-                  taskNumber: '[222]',
-                  appName: 'MICXM/FieldSale App',
-                ),
-                TaskCard(
-                  title: 'Tạo phân hệ User',
-                  date: '04-08/06-08',
-                  priority: 'Low',
-                  letterColor: AppColor.greenColor,
-                  priorityColor: Colors.green.shade100,
-                  taskNumber: '[113]',
-                  appName: 'MICXM/FieldSale App',
-                ),
-              ],
+              itemCount: _tasks.length,
+              itemBuilder: (context, index) {
+                final task = _tasks[index];
+                final nameTask = task['NameJob'] ?? 'No title';
+                final timeStart = DateTime.parse(task['TimeStart']);
+                final timeComplete = DateTime.parse(task['TimeComplete']);
+                final formattedDate =
+                    '${timeStart.day}-${timeStart.month}/${timeComplete.day}-${timeComplete.month}';
+                final priority = task['Priority'] ?? 'Low';
+                final priorityColor = priority == 'High'
+                    ? Colors.red.shade100
+                    : Colors.green.shade100;
+                final letterColor = priority == 'High'
+                    ? AppColor.redColor
+                    : AppColor.greenColor;
+
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => InfoJob(jobId: task['IDJob']),
+                      ),
+                    );
+                  },
+                  child: TaskCard(
+                    title: nameTask,
+                    date: formattedDate,
+                    priority: priority,
+                    letterColor: letterColor,
+                    priorityColor: priorityColor,
+                    taskNumber: '[${task['IDJob']}]',
+                    appName: 'MICXM/FieldSale App',
+                  ),
+                );
+              },
             ),
-          ),
+          )
         ],
       ),
       floatingActionButtonLocation: selectedfABLocation,
@@ -206,7 +255,7 @@ class _MyTaskDashBoardState extends State<MyTaskDashBoard>
         spacing: 3,
         mini: mini,
         openCloseDial: isDialOpen,
-        childPadding: const EdgeInsets.all(5),
+        childPadding: const EdgeInsets.all(8),
         spaceBetweenChildren: 4,
         dialRoot: customDialRoot
             ? (ctx, open, toggleChildren) {
@@ -302,32 +351,6 @@ class _MyTaskDashBoardState extends State<MyTaskDashBoard>
             },
           ),
           SpeedDialChild(
-              child: !rmicons ? const Icon(Icons.work_outline) : null,
-              backgroundColor: AppColor.primaryColor,
-              foregroundColor: Colors.white,
-              labelWidget: Container(
-                width: 100,
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Center(
-                  child: Text(
-                    'Jobs',
-                    style: TextStyle(color: Colors.black),
-                  ),
-                ),
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Job(),
-                  ),
-                );
-              }),
-          SpeedDialChild(
               child: !rmicons ? const Icon(Icons.task_outlined) : null,
               backgroundColor: AppColor.primaryColor,
               foregroundColor: Colors.white,
@@ -340,12 +363,11 @@ class _MyTaskDashBoardState extends State<MyTaskDashBoard>
                 ),
                 child: const Center(
                   child: Text(
-                    ' Create tasks',
+                    'Create Tasks',
                     style: TextStyle(color: Colors.black),
                   ),
                 ),
               ),
-              visible: true,
               onTap: () {
                 Navigator.push(
                   context,
@@ -354,6 +376,33 @@ class _MyTaskDashBoardState extends State<MyTaskDashBoard>
                   ),
                 );
               }),
+          // SpeedDialChild(
+          //     child: !rmicons ? const Icon(Icons.task_outlined) : null,
+          //     backgroundColor: AppColor.primaryColor,
+          //     foregroundColor: Colors.white,
+          //     labelWidget: Container(
+          //       width: 100,
+          //       padding: const EdgeInsets.symmetric(vertical: 8),
+          //       decoration: BoxDecoration(
+          //         color: Colors.grey[300],
+          //         borderRadius: BorderRadius.circular(8),
+          //       ),
+          //       child: const Center(
+          //         child: Text(
+          //           ' Create tasks',
+          //           style: TextStyle(color: Colors.black),
+          //         ),
+          //       ),
+          //     ),
+          //     visible: true,
+          //     onTap: () {
+          //       Navigator.push(
+          //         context,
+          //         MaterialPageRoute(
+          //           builder: (context) => CreateTask(),
+          //         ),
+          //       );
+          //     }),
         ],
       ),
     );
@@ -483,7 +532,11 @@ class TaskCard extends StatelessWidget {
                   ],
                 ),
               ),
-              Text(taskNumber, style: const TextStyle(color: Colors.grey)),
+              Padding(
+                padding: const EdgeInsets.only(right: 4.0),
+                child: Text(taskNumber,
+                    style: const TextStyle(color: Colors.grey)),
+              ),
             ],
           ),
           Text(appName, style: const TextStyle(color: Colors.grey)),

@@ -1,29 +1,32 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 import 'package:work_flow/api_constants.dart';
-import 'package:work_flow/view/screens/stages/stage_info_in_workflow.dart';
 import 'package:work_flow/view/widgets/app_dropdown.dart';
 
-class CreateNewWorkflow extends StatefulWidget {
-  const CreateNewWorkflow({super.key});
+class CreateWorkflowInGroup extends StatefulWidget {
+  final int groupId;
+  final String groupName;
+  const CreateWorkflowInGroup(
+      {super.key, required this.groupId, required this.groupName});
 
   @override
-  State<CreateNewWorkflow> createState() => _CreateNewWorkflowState();
+  State<CreateWorkflowInGroup> createState() => _CreateWorkflowInGroupState();
 }
 
-class _CreateNewWorkflowState extends State<CreateNewWorkflow> {
+class _CreateWorkflowInGroupState extends State<CreateWorkflowInGroup> {
   bool _isEditing = false;
+  int? selectedGroupId;
+  String? selectedGroupName;
 
   String _description = '';
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
   List<dynamic> listGroups = [];
-  int? selectedGroupId;
   int? _selectedGroup;
 
   Future<void> createWorkflow(int selectedGroupId) async {
@@ -67,10 +70,8 @@ class _CreateNewWorkflowState extends State<CreateNewWorkflow> {
       final responseBody = jsonDecode(response.body);
 
       final workflowId = responseBody['workflowId'];
-      // final stageIds = responseBody['stageIds'];
 
       print('Workflow ID: $workflowId');
-      //  print('Stage IDs: $stageIds');
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -129,8 +130,9 @@ class _CreateNewWorkflowState extends State<CreateNewWorkflow> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    _selectedGroup = widget.groupId;
+    selectedGroupName = widget.groupName;
     _getListGroups();
   }
 
@@ -269,7 +271,8 @@ class _CreateNewWorkflowState extends State<CreateNewWorkflow> {
                     onChanged: (newValue) {
                       setState(() {
                         _selectedGroup = newValue;
-                        selectedGroupId = newValue;
+                        selectedGroupName = listGroups.firstWhere((group) =>
+                            group['GroupID'] == newValue)['GroupName'];
                       });
                     },
                     hint: "Chọn Groups",

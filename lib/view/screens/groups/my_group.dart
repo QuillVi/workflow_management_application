@@ -33,7 +33,7 @@ class _MyGroupsState extends State<MyGroups> {
         'Authorization': 'Bearer $token',
       };
       final response = await http.get(
-        Uri.parse('$baseUrl/group/getDetailAllGroup/1'),
+        Uri.parse('$baseUrl/group/getAll'),
         headers: headers,
       );
 
@@ -192,7 +192,6 @@ class _MyGroupsState extends State<MyGroups> {
                         final group = _groups[index];
                         final groupName =
                             group['GroupName'] ?? 'Không có tên nhóm';
-                        final members = group['Members'] as List;
 
                         return GestureDetector(
                           onTap: () {
@@ -231,45 +230,6 @@ class _MyGroupsState extends State<MyGroups> {
                                       ),
                                     ],
                                   ),
-                                  SizedBox(height: 12),
-                                  if (members.isNotEmpty)
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: members.map((member) {
-                                        final username = member['Username'] ??
-                                            'Không có Username';
-                                        return Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 4),
-                                          child: Row(
-                                            children: [
-                                              Icon(
-                                                Icons.person_outline,
-                                                color: Colors.grey,
-                                                size: 16,
-                                              ),
-                                              SizedBox(width: 8),
-                                              Text(
-                                                username,
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  color: Colors.grey[700],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      }).toList(),
-                                    )
-                                  else
-                                    Text(
-                                      'Không có thành viên',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.grey[600],
-                                      ),
-                                    ),
                                 ],
                               ),
                             ),

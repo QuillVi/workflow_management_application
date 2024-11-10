@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:work_flow/api_constants.dart';
 import 'package:work_flow/view/screens/jobs/create_job.dart';
 import 'package:work_flow/view/screens/jobs/info_job.dart';
+import 'package:work_flow/view/screens/tasks/create_task.dart';
 
 class Job extends StatefulWidget {
   const Job({super.key});
@@ -16,7 +17,7 @@ class Job extends StatefulWidget {
 
 class _JobState extends State<Job> {
   bool _isEditing = false;
-  String _title = 'Jobs';
+  String _title = 'Tasks';
   List _jobs = [];
   bool _isLoading = true;
 
@@ -115,7 +116,7 @@ class _JobState extends State<Job> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => CreateJob(),
+                        builder: (context) => CreateTask(),
                       ),
                     );
                   },
@@ -127,7 +128,7 @@ class _JobState extends State<Job> {
                         width: 120,
                         height: 20,
                         child: Text(
-                          'Tạo Jobs',
+                          'Tạo Task',
                           textAlign: TextAlign.center,
                           style: TextStyle(color: Colors.black, fontSize: 12),
                         ),
@@ -152,7 +153,7 @@ class _JobState extends State<Job> {
                         width: 120,
                         height: 20,
                         child: Text(
-                          'Xoá Jobs',
+                          'Xoá Task',
                           textAlign: TextAlign.center,
                           style: TextStyle(color: Colors.black, fontSize: 12),
                         ),

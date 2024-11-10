@@ -26,17 +26,24 @@ class _LoginState extends State<Login> {
 
   void login(String email, String password) async {
     try {
-      final response = await post(Uri.parse('$baseUrl/login'), body: {
-        'username': email,
-        'password': password,
-      });
+      final response = await post(
+        Uri.parse('$baseUrl/login'),
+        body: {
+          'username': email,
+          'password': password,
+        },
+      );
 
       if (response.statusCode == 200) {
         Map<String, dynamic> mapResponse = jsonDecode(response.body);
+
         updateData(mapResponse);
-        if (mapResponse['token'].toString().isNotEmpty) {
+
+        if (mapResponse['token'] != null &&
+            mapResponse['token'].toString().isNotEmpty) {
           final prefs = await SharedPreferences.getInstance();
           prefs.setString('token', mapResponse['token']);
+
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => Mybottomnavigationbar()),
@@ -50,27 +57,29 @@ class _LoginState extends State<Login> {
     }
   }
 
-  Future<bool> isLoggedIn() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('token') != null;
-  }
-
-  void initState() {
-    super.initState();
-    isLoggedIn().then((isLoggedIn) {
-      if (isLoggedIn) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => Mybottomnavigationbar()),
-        );
-      }
-    });
-  }
-
   void updateData(Map<String, dynamic> mapResponse) async {
     final pref = await SharedPreferences.getInstance();
     pref.setString('name', mapResponse['Name']);
+    pref.setInt('iduser', mapResponse['IDUser']);
   }
+
+  // Future<bool> isLoggedIn() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   return prefs.getString('token') != null;
+  // }
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   isLoggedIn().then((isLoggedIn) {
+  //     if (isLoggedIn) {
+  //       Navigator.push(
+  //         context,
+  //         MaterialPageRoute(builder: (context) => Mybottomnavigationbar()),
+  //       );
+  //     }
+  //   });
+  // }
 
   Future getValidationData() async {
     final SharedPreferences sharedPreferences =
@@ -101,7 +110,7 @@ class _LoginState extends State<Login> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Đăng nhập',
+                'Login',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -120,7 +129,7 @@ class _LoginState extends State<Login> {
               TextField(
                 controller: passwordController,
                 decoration: InputDecoration(
-                  labelText: 'Mật khẩu',
+                  labelText: 'Password',
                   border: OutlineInputBorder(),
                   suffixIcon: IconButton(
                     icon: Icon(
@@ -149,7 +158,7 @@ class _LoginState extends State<Login> {
                   ),
                 ),
                 child: Text(
-                  'Đăng nhập',
+                  'Login',
                   style: TextStyle(fontSize: 16, color: AppColor.whiteColor),
                 ),
               ),
@@ -159,7 +168,7 @@ class _LoginState extends State<Login> {
                   Expanded(child: Divider()),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text("hoặc đăng nhập với"),
+                    child: Text("or login with"),
                   ),
                   Expanded(child: Divider()),
                 ],

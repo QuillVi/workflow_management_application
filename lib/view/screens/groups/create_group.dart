@@ -27,8 +27,13 @@ class _CreateGroupState extends State<CreateGroup> {
       return;
     }
 
-    final String groupName = groupNameController.text;
+    final String groupName = groupNameController.text.trim();
     final int idUser = 1;
+
+    if (groupName.isEmpty) {
+      print('Group name is required.');
+      return;
+    }
 
     if (emailController.text.isNotEmpty) {
       emailList.add(emailController.text);
@@ -48,16 +53,15 @@ class _CreateGroupState extends State<CreateGroup> {
         }),
       );
 
+      print(response.body);
       if (response.statusCode == 201) {
-        final data = json.decode(response.body);
+        final Map<String, dynamic> data = json.decode(response.body);
         final int groupId = data['group']['GroupID'];
 
         print('Group created with ID: $groupId');
-
         await addMembersToGroup(groupId);
         Navigator.pop(context);
       } else {
-        print('Token : $token');
         print('Failed to create group: ${response.body}');
       }
     } catch (e) {
@@ -114,7 +118,7 @@ class _CreateGroupState extends State<CreateGroup> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create Group and Add Members'),
+        title: Text('Create Group'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
