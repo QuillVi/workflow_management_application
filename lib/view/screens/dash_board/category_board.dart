@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:work_flow/api_constants.dart';
 import 'package:work_flow/themes/primarycolor.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:work_flow/view/screens/jobs/category_view_jobs/category_view_job_completed.dart';
+import 'package:work_flow/view/screens/jobs/category_view_jobs/category_view_job_todo.dart';
 
 class CategoryBoard extends StatefulWidget {
   const CategoryBoard({super.key});
@@ -9,18 +15,170 @@ class CategoryBoard extends StatefulWidget {
 }
 
 class _CategoryBoardState extends State<CategoryBoard> {
+  late Future<int> totalJobsReceived;
+  late Future<int> totalJobsToDo;
+  Future<int> fetchTotalJobsReceived() async {
+    try {
+      final token = await _getToken();
+      if (token == null || token.isEmpty) {
+        throw Exception('Token không tồn tại. Vui lòng đăng nhập lại.');
+      }
+
+      final prefs = await SharedPreferences.getInstance();
+      final idUser = prefs.getInt('IDUser');
+      if (idUser == null) {
+        throw Exception('IDUser không tồn tại.');
+      }
+
+      // Gọi API
+      final url = '$baseUrl/job/totaljobsinweek/$idUser';
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['success'] == true) {
+          return data['data']['totalJobsReceived'];
+        } else {
+          throw Exception(data['message'] ?? 'Lỗi khi gọi API');
+        }
+      } else {
+        throw Exception('HTTP Error: ${response.statusCode}');
+      }
+    } catch (error) {
+      throw Exception('Error: $error');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchTotalJobsToDo() async {
+    try {
+      // Lấy token và IDUser từ SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+      final idUser = prefs.getInt('IDUser');
+
+      if (token == null || token.isEmpty) {
+        throw Exception('Token không tồn tại. Vui lòng đăng nhập lại.');
+      }
+
+      if (idUser == null) {
+        throw Exception('IDUser không tồn tại.');
+      }
+
+      // Gọi API
+      final url = Uri.parse('$baseUrl/job/getjobstodo/$idUser');
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      // Kiểm tra trạng thái phản hồi
+      if (response.statusCode != 200) {
+        throw Exception('Lỗi khi gọi API: ${response.statusCode}');
+      }
+
+      // Phân tích dữ liệu JSON
+      final responseData = json.decode(response.body);
+
+      if (responseData['success'] != true || responseData['data'] == null) {
+        throw Exception('Dữ liệu trả về không hợp lệ.');
+      }
+
+      // Trích xuất dữ liệu công việc
+      final jobs = (responseData['data'] as List).map((job) {
+        return {
+          'IDJob': job['IDJob'],
+          'NameJob': job['NameJob'],
+          'TimeStart': job['TimeStart'],
+          'Status': job['Status'],
+        };
+      }).toList();
+
+      return jobs;
+    } catch (error) {
+      print('Lỗi khi lấy công việc: $error');
+      return [];
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchTotalJobsCompleted() async {
+    try {
+      // Lấy token và IDUser từ SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+      final idUser = prefs.getInt('IDUser');
+
+      if (token == null || token.isEmpty) {
+        throw Exception('Token không tồn tại. Vui lòng đăng nhập lại.');
+      }
+
+      if (idUser == null) {
+        throw Exception('IDUser không tồn tại.');
+      }
+
+      // Gọi API
+      final url = Uri.parse('$baseUrl/job/getjobscompleted/$idUser');
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      // Kiểm tra trạng thái phản hồi
+      if (response.statusCode != 200) {
+        throw Exception('Lỗi khi gọi API: ${response.statusCode}');
+      }
+
+      // Phân tích dữ liệu JSON
+      final responseData = json.decode(response.body);
+
+      if (responseData['success'] != true || responseData['data'] == null) {
+        throw Exception('Dữ liệu trả về không hợp lệ.');
+      }
+
+      // Trích xuất dữ liệu công việc
+      final jobs = (responseData['data'] as List).map((job) {
+        return {
+          'IDJob': job['IDJob'],
+          'NameJob': job['NameJob'],
+          'TimeStart': job['TimeStart'],
+          'Status': job['Status'],
+        };
+      }).toList();
+
+      return jobs;
+    } catch (error) {
+      print('Lỗi khi lấy công việc: $error');
+      return [];
+    }
+  }
+
+  Future<String?> _getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token');
+  }
+
+  @override
+  void initState() {
+    totalJobsReceived = fetchTotalJobsReceived();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            // Xử lý khi nhấn nút quay lại
-          },
-        ),
         title: Text(
           'Danh mục',
           style: TextStyle(color: Colors.black),
@@ -33,65 +191,138 @@ class _CategoryBoardState extends State<CategoryBoard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              GridView.count(
-                crossAxisCount: 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                childAspectRatio: 1.4,
-                children: [
-                  buildStatCard(
-                    Icon(Icons.task, color: AppColor.primaryColor),
-                    '136',
-                    'Task',
-                    AppColor.primaryColor,
-                  ),
-                  buildStatCard(
-                    Icon(Icons.event, color: AppColor.yellowColor),
-                    '0',
-                    'Nghỉ phép',
-                    AppColor.yellowColor,
-                  ),
-                  buildStatCard(
-                    Icon(Icons.timer, color: AppColor.greenColor),
-                    '30',
-                    'Chấm công',
-                    AppColor.greenColor,
-                  ),
-                  buildStatCard(
-                    Icon(Icons.summarize, color: AppColor.redColor),
-                    '136',
-                    'Tổng giờ',
-                    AppColor.redColor,
-                  ),
-                ],
+              FutureBuilder<int>(
+                future: totalJobsReceived,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text('Lỗi: ${snapshot.error}'),
+                    );
+                  } else if (snapshot.hasData) {
+                    return GridView.count(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      childAspectRatio: 1.4,
+                      children: [
+                        buildStatCard(
+                          Icon(Icons.task, color: AppColor.primaryColor),
+                          snapshot.data.toString(),
+                          'Task',
+                          AppColor.primaryColor,
+                        ),
+                        buildStatCard(
+                          Icon(Icons.event, color: AppColor.yellowColor),
+                          '0',
+                          'Nghỉ phép',
+                          AppColor.yellowColor,
+                        ),
+                        buildStatCard(
+                          Icon(Icons.timer, color: AppColor.greenColor),
+                          '30',
+                          'Chấm công',
+                          AppColor.greenColor,
+                        ),
+                        buildStatCard(
+                          Icon(Icons.summarize, color: AppColor.redColor),
+                          '136',
+                          'Tổng giờ',
+                          AppColor.redColor,
+                        ),
+                      ],
+                    );
+                  } else {
+                    return Center(
+                      child: Text('Không có dữ liệu'),
+                    );
+                  }
+                },
               ),
               SizedBox(height: 16),
-              buildSectionHeader('Đang thực hiện', onViewAll: () {}),
+              buildSectionHeader('Đang thực hiện', onViewAll: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CategoryViewJobTodo(),
+                  ),
+                );
+              }),
               SizedBox(height: 16),
-              buildShipmentCard(
-                id: 'SDK-108-WRT-56',
-                date: '12-04-2021',
-                from: 'dong vi',
-                status: 'In progress',
+              FutureBuilder<List<Map<String, dynamic>>>(
+                future: fetchTotalJobsToDo(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text('Lỗi: ${snapshot.error}'),
+                    );
+                  } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                    // Chỉ lấy job đầu tiên từ dữ liệu trả về
+                    final job = snapshot.data!.first;
+                    return buildShipmentCard(
+                      id: job['IDJob'].toString(),
+                      namejob: job['NameJob'],
+                      date: job['TimeStart']
+                          .substring(0, 10), // Lấy ngày từ TimeStart
+                      from: 'dong vi', // Thay thế bằng dữ liệu phù hợp nếu cần
+                      status: job['Status'],
+                    );
+                  } else {
+                    return Center(
+                      child: Text(
+                          'Không có công việc nào với trạng thái "to do".'),
+                    );
+                  }
+                },
               ),
               SizedBox(height: 16),
-              buildSectionHeader('Đã hoàng thành', onViewAll: () {}),
+              buildSectionHeader('Đã hoàn thành', onViewAll: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CategoryViewJobCompleted(),
+                  ),
+                );
+              }),
               SizedBox(height: 16),
-              buildShipmentCard(
-                id: 'SDK-108-WRT-56',
-                date: '12-04-2021',
-                from: 'dong vi',
-                status: 'done',
-                isRecent: true,
-              ),
-              buildShipmentCard(
-                id: 'SDK-108-WRT-56',
-                date: '12-04-2021',
-                from: 'dong vi',
-                status: 'done',
-                isRecent: true,
+              FutureBuilder<List<Map<String, dynamic>>>(
+                future: fetchTotalJobsCompleted(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text('Lỗi: ${snapshot.error}'),
+                    );
+                  } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                    // Chỉ lấy job đầu tiên từ dữ liệu trả về
+                    final job = snapshot.data!.first;
+                    return buildShipmentCard(
+                      id: job['IDJob'].toString(),
+                      namejob: job['NameJob'],
+                      date: job['TimeStart']
+                          .substring(0, 10), // Lấy ngày từ TimeStart
+                      from: 'dong vi', // Thay thế bằng dữ liệu phù hợp nếu cần
+                      status: job['Status'],
+                    );
+                  } else {
+                    return Center(
+                      child: Text(
+                          'Không có công việc nào với trạng thái "to do".'),
+                    );
+                  }
+                },
               ),
             ],
           ),
@@ -169,6 +400,7 @@ class _CategoryBoardState extends State<CategoryBoard> {
 
   Widget buildShipmentCard({
     required String id,
+    required String namejob,
     required String date,
     required String from,
     required String status,
@@ -199,6 +431,17 @@ class _CategoryBoardState extends State<CategoryBoard> {
                   SizedBox(width: 10),
                   Text(
                     id,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Text(
+                    namejob,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,

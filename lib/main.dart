@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:work_flow/view/screens/dash_board/mybottomnavigationbar.dart';
+import 'package:work_flow/view/screens/dash_board/user_bottomnavigationbar.dart';
 import 'package:work_flow/view/screens/splash_creen/splash_creen_word_group_1.dart';
 
 void main() {
@@ -18,6 +19,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   bool _isSplashDone = false;
   bool? _isLoggedIn;
+  String? _userRole;
 
   @override
   void initState() {
@@ -29,15 +31,23 @@ class _MyAppState extends State<MyApp> {
     await Future.delayed(const Duration(seconds: 2));
 
     final loggedIn = await isLoggedIn();
+    final role = await getUserRole();
+
     setState(() {
       _isSplashDone = true;
       _isLoggedIn = loggedIn;
+      _userRole = role;
     });
   }
 
   Future<bool> isLoggedIn() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('token') != null;
+  }
+
+  Future<String?> getUserRole() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('role');
   }
 
   @override
@@ -63,7 +73,7 @@ class _MyAppState extends State<MyApp> {
                   ),
                 ),
                 const Text(
-                  'App Managetment',
+                  'App Management',
                   style: TextStyle(fontSize: 15),
                 ),
               ],
@@ -75,6 +85,19 @@ class _MyAppState extends State<MyApp> {
         ),
       );
     } else {
+      // if (_isLoggedIn == true) {
+      //   return MaterialApp(
+      //     debugShowCheckedModeBanner: false,
+      //     home: (_userRole == 'admin')
+      //         ? Mybottomnavigationbar()
+      //         : UserBottomNavigationBar(),
+      //   );
+      // } else {
+      //   return MaterialApp(
+      //     debugShowCheckedModeBanner: false,
+      //     home: SplashCreenWordGroup1(),
+      //   );
+      // }
       if (_isLoggedIn == true) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,

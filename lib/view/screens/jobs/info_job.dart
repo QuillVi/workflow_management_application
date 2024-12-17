@@ -109,14 +109,14 @@ class _InfoJobState extends State<InfoJob> {
                 children: [
                   _buildSectionTitle("Description"),
                   _buildInfoCard([
-                    _buildDescription(job!.DescriptionJob),
+                    _buildDescription(job!.DescriptionJob ?? 'No Description'),
                   ]),
                   SizedBox(height: 20),
                   _buildSectionTitle("Job Information"),
                   _buildInfoCard([
                     _buildInfoRow("Job ID", job!.IDJob.toString()),
                     _buildInfoRow("Status", job!.Status),
-                    _buildInfoRow("Priority", job!.Priority),
+                    _buildInfoRow("Priority", job!.Priority ?? 'Null'),
                   ]),
                   SizedBox(height: 20),
                   _buildSectionTitle("User Information"),
@@ -214,11 +214,11 @@ class Job {
   final int? IDCreator;
   final String TimeComplete;
   final String TimeStart;
-  final String DescriptionJob;
+  final String? DescriptionJob;
   final String? approximateTime;
   final String NameJob;
   final int? IDPriorityLevel;
-  final String Priority;
+  final String? Priority;
   final int? IDListFollower;
   final int? IDProject;
   final int? IDWorkFLow;

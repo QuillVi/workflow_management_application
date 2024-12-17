@@ -1,15 +1,15 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:jwt_decode/jwt_decode.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:work_flow/api_constants.dart';
 import 'package:work_flow/themes/primarycolor.dart';
 import 'package:work_flow/view/screens/chats/chat_dash_board.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:intl/intl.dart';
 
 import 'package:work_flow/view/screens/jobs/info_job.dart';
+import 'package:work_flow/view/screens/login_app/login.dart';
 
 class DashBoard extends StatefulWidget {
   const DashBoard({super.key});
@@ -20,28 +20,38 @@ class DashBoard extends StatefulWidget {
 
 Map mapResponse = {};
 String nameUser = '';
+int idUser = -1;
 
 class _DashBoardState extends State<DashBoard> {
   int? selectedDateIndex;
   List<dynamic> _members = [];
   List<dynamic> _tasks = [];
+  late Future<Map<String, dynamic>> jobDataFuture;
 
   Future<void> _loadTasks() async {
     final token = await _getToken();
     if (token != null) {
-      final response = await http.get(
-        Uri.parse('$baseUrl/job/getAll'),
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
-      );
-      if (response.statusCode == 200) {
-        final jsonData = jsonDecode(response.body);
-        setState(() {
-          _tasks = jsonData;
-        });
-      } else {
-        print('Failed to load jobs');
+      try {
+        final response = await http.get(
+          Uri.parse('$baseUrl/job/getAll'),
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        );
+
+        if (response.statusCode == 200) {
+          final jsonData = jsonDecode(response.body);
+
+          if (mounted) {
+            setState(() {
+              _tasks = jsonData;
+            });
+          }
+        } else {
+          print('Failed to load jobs: ${response.statusCode}');
+        }
+      } catch (error) {
+        print('Error loading jobs: $error');
       }
     } else {
       print('Token not found');
@@ -51,28 +61,76 @@ class _DashBoardState extends State<DashBoard> {
   Future<void> loadUsers() async {
     final token = await _getToken();
     if (token != null) {
+      try {
+        final response = await http.get(
+          Uri.parse('$baseUrl/appUser/getAll'),
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        );
+
+        if (response.statusCode == 200) {
+          final jsonData = jsonDecode(response.body);
+
+          if (jsonData is List) {
+            setState(() {
+              _members = jsonData;
+            });
+          } else {
+            print('Expected a list, but got something else');
+          }
+        } else {
+          print('Failed to load users');
+        }
+      } catch (error) {
+        print('Error loading users: $error');
+      }
+    } else {
+      print('Token not found');
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchJobData() async {
+    try {
+      final pref = await SharedPreferences.getInstance();
+      final token = pref.getString('token');
+
+      if (token == null || token.isEmpty) {
+        throw Exception('Token không tồn tại. Vui lòng đăng nhập lại.');
+      }
+
+      final idUser = pref.getInt('IDUser');
+      if (idUser == null) {
+        throw Exception('IDUser không được tìm thấy trong SharedPreferences.');
+      }
+
+      final url = '$baseUrl/job/totaljobsinweek/$idUser';
       final response = await http.get(
-        Uri.parse('$baseUrl/appUser/getAll'),
+        Uri.parse(url),
         headers: {
           'Authorization': 'Bearer $token',
         },
       );
 
       if (response.statusCode == 200) {
-        final jsonData = jsonDecode(response.body);
+        final data = json.decode(response.body);
 
-        if (jsonData is List) {
-          setState(() {
-            _members = jsonData;
-          });
+        if (data['success'] == true) {
+          return {
+            'totalJobsReceived': data['data']['totalJobsReceived'],
+            'totalJobsTodo': data['data']['totalJobsTodo'],
+            'totalJobsCompleted': data['data']['totalJobsCompleted'],
+            'totalJobsLate': data['data']['totalJobsLate'],
+          };
         } else {
-          print('Expected a list, but got something else');
+          throw Exception(data['message'] ?? 'Error fetching data.');
         }
       } else {
-        print('Failed to load users');
+        throw Exception(
+            'Failed to fetch data. Status code: ${response.statusCode}');
       }
-    } else {
-      print('Token not found');
+    } catch (error) {
+      throw Exception('Error: $error');
     }
   }
 
@@ -83,20 +141,61 @@ class _DashBoardState extends State<DashBoard> {
             'name',
           ) ??
           'not found';
+
+      idUser = pref.getInt('IDUser') ?? -1;
     });
+  }
+
+  Future<void> _handleTokenExpiry() async {
+    // Xóa token cũ
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('token');
+
+    // Chuyển hướng về trang đăng nhập
+    if (mounted) {
+      // Dùng Future để đảm bảo pushReplacement được gọi đúng lúc
+      Future.microtask(() {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => Login()),
+        );
+      });
+    }
+  }
+
+  Future<bool> _isTokenExpired(String? token) async {
+    if (token == null) return true; // Token không tồn tại, coi như hết hạn
+
+    try {
+      // Giải mã token và kiểm tra
+      bool isExpired = Jwt.isExpired(token);
+      return isExpired; // Trả về true nếu token hết hạn
+    } catch (e) {
+      print('Error decoding token: $e');
+      return true; // Lỗi giải mã, coi như token không hợp lệ
+    }
   }
 
   Future<String?> _getToken() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('token');
+    final token = prefs.getString('token');
+
+    final isExpired = await _isTokenExpired(token);
+    if (isExpired) {
+      print('Token đã hết hạn');
+      await _handleTokenExpiry(); // Xóa token và chuyển về màn hình đăng nhập
+      return null;
+    }
+
+    return token; // Chỉ trả về token còn hiệu lực
   }
 
   @override
   void initState() {
+    super.initState();
     getData();
     loadUsers();
     _loadTasks();
-    super.initState();
+    jobDataFuture = fetchJobData();
   }
 
   @override
@@ -147,38 +246,53 @@ class _DashBoardState extends State<DashBoard> {
                     style: TextStyle(fontSize: 16),
                   ),
                   const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      SummaryCard(
-                        label: 'Trong tuần',
-                        value: '84',
-                        color: AppColor.whiteColor,
-                        colorbackground: AppColor.primaryColor,
-                        sizebackground: const Size(80, 80),
-                      ),
-                      SummaryCard(
-                        label: 'Đang làm',
-                        value: '16',
-                        color: AppColor.whiteColor,
-                        sizebackground: const Size(80, 80),
-                        colorbackground: AppColor.yellowColor,
-                      ),
-                      SummaryCard(
-                        label: 'Hoàn thành',
-                        value: '16',
-                        color: AppColor.whiteColor,
-                        sizebackground: const Size(80, 80),
-                        colorbackground: AppColor.greenColor,
-                      ),
-                      SummaryCard(
-                        label: 'Quá hạn',
-                        value: '16',
-                        color: AppColor.whiteColor,
-                        sizebackground: const Size(80, 80),
-                        colorbackground: AppColor.redColor,
-                      ),
-                    ],
+                  FutureBuilder<Map<String, dynamic>>(
+                    future: fetchJobData(), // Gọi API
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator(); // Hiển thị khi đang tải dữ liệu
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else if (snapshot.hasData) {
+                        final data = snapshot.data!;
+
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SummaryCard(
+                              label: 'Trong tuần',
+                              value: data['totalJobsReceived'].toString(),
+                              color: AppColor.whiteColor,
+                              colorbackground: AppColor.primaryColor,
+                              sizebackground: const Size(80, 80),
+                            ),
+                            SummaryCard(
+                              label: 'Đang làm',
+                              value: data['totalJobsTodo'].toString(),
+                              color: AppColor.whiteColor,
+                              sizebackground: const Size(80, 80),
+                              colorbackground: AppColor.yellowColor,
+                            ),
+                            SummaryCard(
+                              label: 'Hoàn thành',
+                              value: data['totalJobsCompleted'].toString(),
+                              color: AppColor.whiteColor,
+                              sizebackground: const Size(80, 80),
+                              colorbackground: AppColor.greenColor,
+                            ),
+                            SummaryCard(
+                              label: 'Quá hạn',
+                              value: data['totalJobsLate'].toString(),
+                              color: AppColor.whiteColor,
+                              sizebackground: const Size(80, 80),
+                              colorbackground: AppColor.redColor,
+                            ),
+                          ],
+                        );
+                      } else {
+                        return Text('No data available');
+                      }
+                    },
                   ),
                   const SizedBox(height: 20),
                   const Text(
@@ -220,8 +334,14 @@ class _DashBoardState extends State<DashBoard> {
                         final timeStart = DateTime.parse(task['TimeStart']);
                         final timeComplete =
                             DateTime.parse(task['TimeComplete']);
+
+                        // Định dạng ngày với gói intl
+                        final formattedStartDate =
+                            DateFormat('dd-MM-yyyy').format(timeStart);
+                        final formattedCompleteDate =
+                            DateFormat('dd-MM-yyyy').format(timeComplete);
                         final formattedDate =
-                            '${timeStart.day}-${timeStart.month}/${timeComplete.day}-${timeComplete.month}';
+                            '$formattedStartDate to $formattedCompleteDate';
 
                         return GestureDetector(
                           onTap: () {
@@ -265,15 +385,26 @@ class _DashBoardState extends State<DashBoard> {
                         return GestureDetector(
                           onTap: () {},
                           child: Card(
+                            margin: const EdgeInsets.symmetric(
+                                vertical: 8, horizontal: 16),
                             child: Padding(
                               padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Text(
-                                    nameMember ?? 'No Name',
-                                    style: TextStyle(
-                                      fontSize: 18,
+                                  Image.asset(
+                                    'lib/images/user.png',
+                                    width: 40,
+                                    height: 40,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Text(
+                                      nameMember,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
                                 ],

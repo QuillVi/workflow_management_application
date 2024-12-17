@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:work_flow/themes/primarycolor.dart';
 import 'package:work_flow/view/screens/login_app/login.dart';
-import 'package:work_flow/view/screens/login_app/rigister.dart';
 import 'package:work_flow/view/widgets/content_model.dart';
 
 class SplashCreenWordGroup1 extends StatefulWidget {
@@ -91,12 +90,12 @@ class _SplashCreenWordGroup1State extends State<SplashCreenWordGroup1> {
                     SizedBox(height: 10),
                     OutlinedButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => Login(),
-                          ),
-                        );
+                        if (mounted) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => Login()),
+                          );
+                        }
                       },
                       style: OutlinedButton.styleFrom(
                         padding:

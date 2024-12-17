@@ -37,6 +37,7 @@ class _LoginState extends State<Login> {
       if (response.statusCode == 200) {
         Map<String, dynamic> mapResponse = jsonDecode(response.body);
 
+        print('Phản hồi API đăng nhập: $mapResponse');
         updateData(mapResponse);
 
         if (mapResponse['token'] != null &&
@@ -44,42 +45,51 @@ class _LoginState extends State<Login> {
           final prefs = await SharedPreferences.getInstance();
           prefs.setString('token', mapResponse['token']);
 
+          // Hiện thông báo thành công
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Đăng nhập thành công!'),
+              backgroundColor: Colors.green,
+              duration: Duration(milliseconds: 500),
+            ),
+          );
+
+          await Future.delayed(Duration(seconds: 1));
+
+          // Chuyển đến màn hình chính
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => Mybottomnavigationbar()),
           );
         }
       } else {
+        // Hiện thông báo lỗi đăng nhập
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Đăng nhập không thành công!'),
+            backgroundColor: Colors.red,
+          ),
+        );
         print('Lỗi: ${response.statusCode}');
       }
     } catch (e) {
+      // Hiện thông báo lỗi ngoại lệ
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Đã xảy ra lỗi: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
       print('Lỗi: ${e.toString()}');
     }
   }
 
   void updateData(Map<String, dynamic> mapResponse) async {
     final pref = await SharedPreferences.getInstance();
+    print('IDUser được lưu: ${mapResponse['IDUser']}');
     pref.setString('name', mapResponse['Name']);
     pref.setInt('iduser', mapResponse['IDUser']);
   }
-
-  // Future<bool> isLoggedIn() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   return prefs.getString('token') != null;
-  // }
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   isLoggedIn().then((isLoggedIn) {
-  //     if (isLoggedIn) {
-  //       Navigator.push(
-  //         context,
-  //         MaterialPageRoute(builder: (context) => Mybottomnavigationbar()),
-  //       );
-  //     }
-  //   });
-  // }
 
   Future getValidationData() async {
     final SharedPreferences sharedPreferences =
