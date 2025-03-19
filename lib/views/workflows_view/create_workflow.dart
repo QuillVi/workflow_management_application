@@ -184,8 +184,6 @@ class _CreateNewWorkflowState extends State<CreateNewWorkflow> {
 
   @override
   void dispose() {
-    _descriptionController.dispose();
-    _titleController.dispose();
     _stageNameController.dispose();
     _stageDescriptionController.dispose();
     super.dispose();

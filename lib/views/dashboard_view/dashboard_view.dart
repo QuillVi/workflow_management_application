@@ -9,7 +9,7 @@ import 'package:work_flow/viewmodels/dashboard_view_model/task_view_model.dart';
 import 'package:work_flow/views/chat_view/chat_dash_board.dart';
 import 'package:intl/intl.dart';
 
-import 'package:work_flow/views/screens/jobs/info_job.dart';
+import 'package:work_flow/views/jobs_view/info_job.dart';
 
 class DashBoard extends StatefulWidget {
   const DashBoard({super.key});
@@ -29,7 +29,6 @@ class _DashBoardState extends State<DashBoard> {
   int? selectedDateIndex;
   List<dynamic> _members = [];
   List<dynamic> _tasks = [];
-  Map<String, dynamic> _jobStatus = {};
 
   void getData() async {
     final pref = await SharedPreferences.getInstance();
@@ -48,11 +47,10 @@ class _DashBoardState extends State<DashBoard> {
         _members = value;
       },
     );
-    context.read<TaskViewModel>().loadTasks().then(
-      (value) {
-        _tasks = value;
-      },
-    );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<TaskViewModel>().loadTasks();
+    });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<FecthJobStatusViewModel>().fetchJobData(context);
@@ -184,64 +182,139 @@ class _DashBoardState extends State<DashBoard> {
                   ),
                   const SizedBox(height: 10),
                   Consumer<TaskViewModel>(
-                    builder: (context, value, child) {
-                      return Container(
-                        height: 150,
-                        child: _tasks.isEmpty
+                    builder: (context, taskViewModel, child) {
+                      final tasks = taskViewModel.tasks;
+                      final isLoading = taskViewModel.isLoading;
+
+                      return SizedBox(
+                        height:
+                            160, // Tăng chiều cao để có đủ không gian hiển thị
+                        child: isLoading
                             ? const Center(
-                                child: CircularProgressIndicator(),
+                                child:
+                                    CircularProgressIndicator(), // Hiển thị loading
                               )
-                            : ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                itemCount: _tasks.length,
-                                itemBuilder: (context, index) {
-                                  final task = _tasks[index];
-                                  final nameTask =
-                                      task['NameJob'] ?? 'No title';
-                                  final timeStart =
-                                      DateTime.parse(task['TimeStart']);
-                                  final timeComplete =
-                                      DateTime.parse(task['TimeComplete']);
+                            : tasks.isEmpty
+                                ? const Center(
+                                    child: Text(
+                                      "Không có công việc nào",
+                                      style: TextStyle(
+                                          fontSize: 16, color: Colors.grey),
+                                    ),
+                                  )
+                                : ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: tasks.length,
+                                    itemBuilder: (context, index) {
+                                      final task = tasks[index];
+                                      final nameTask =
+                                          task['NameJob'] ?? 'Không có tiêu đề';
+                                      final timeStart = DateTime.tryParse(
+                                              task['TimeStart'] ?? '') ??
+                                          DateTime.now();
+                                      final timeComplete = DateTime.tryParse(
+                                              task['TimeComplete'] ?? '') ??
+                                          DateTime.now();
 
-                                  // Định dạng ngày với gói intl
-                                  final formattedStartDate =
-                                      DateFormat('dd-MM-yyyy')
-                                          .format(timeStart);
-                                  final formattedCompleteDate =
-                                      DateFormat('dd-MM-yyyy')
-                                          .format(timeComplete);
-                                  final formattedDate =
-                                      '$formattedStartDate to $formattedCompleteDate';
+                                      // Định dạng ngày
+                                      final formattedStartDate =
+                                          DateFormat('dd-MM-yyyy')
+                                              .format(timeStart);
+                                      final formattedCompleteDate =
+                                          DateFormat('dd-MM-yyyy')
+                                              .format(timeComplete);
+                                      final formattedDate =
+                                          '$formattedStartDate → $formattedCompleteDate';
 
-                                  return GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              InfoJob(jobId: task['IDJob']),
+                                      return GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  InfoJob(jobId: task['IDJob']),
+                                            ),
+                                          );
+                                        },
+                                        child: Container(
+                                          margin:
+                                              const EdgeInsets.only(right: 10),
+                                          width:
+                                              250, // Điều chỉnh chiều rộng của card
+                                          child: Card(
+                                            elevation:
+                                                4, // Đổ bóng nhẹ cho card
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(12),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                                15), // Bo góc avatar
+                                                        child: Image.asset(
+                                                          'lib/images/user.png',
+                                                          width: 30,
+                                                          height: 30,
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(width: 8),
+                                                      Expanded(
+                                                        child: Text(
+                                                          nameTask,
+                                                          style:
+                                                              const TextStyle(
+                                                            fontSize: 16,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  const SizedBox(height: 8),
+                                                  Text(
+                                                    formattedDate,
+                                                    style: const TextStyle(
+                                                        fontSize: 14,
+                                                        color: Colors.grey),
+                                                  ),
+                                                  const SizedBox(height: 4),
+                                                  Text(
+                                                    'App: MICXM/FieldSale App',
+                                                    style: TextStyle(
+                                                        fontSize: 13,
+                                                        color: Colors
+                                                            .blue.shade700),
+                                                  ),
+                                                  const SizedBox(height: 4),
+                                                  Text(
+                                                    'Mã công việc: [${task['IDJob']}]',
+                                                    style: const TextStyle(
+                                                        fontSize: 13,
+                                                        fontWeight:
+                                                            FontWeight.w600),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
                                         ),
                                       );
                                     },
-                                    child: Row(
-                                      children: [
-                                        TaskCard(
-                                          title: nameTask,
-                                          date: formattedDate,
-                                          iconuser: Image.asset(
-                                            'lib/images/user.png',
-                                            width: 30,
-                                            height: 30,
-                                          ),
-                                          appName: 'MICXM/FieldSale App',
-                                          taskNumber: '[${task['IDJob']}]',
-                                        ),
-                                        const SizedBox(width: 10),
-                                      ],
-                                    ),
-                                  );
-                                },
-                              ),
+                                  ),
                       );
                     },
                   ),

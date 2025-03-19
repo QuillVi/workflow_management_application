@@ -30,10 +30,16 @@ import 'package:work_flow/viewmodels/group_view_model.dart/load_workflow_in_grou
 import 'package:work_flow/viewmodels/login_view_model/login_view_model.dart';
 import 'package:work_flow/viewmodels/profile_view_model/get_user_id_view_model.dart';
 import 'package:work_flow/viewmodels/profile_view_model/theme_view_model.dart';
+import 'package:work_flow/viewmodels/stage_view_model.dart/create_stage_client_view_model.dart';
+import 'package:work_flow/viewmodels/stage_view_model.dart/fecth_name_workflow_view_model.dart';
+import 'package:work_flow/viewmodels/stage_view_model.dart/info_stage_view_model.dart';
+import 'package:work_flow/viewmodels/workflow_view_model/load_stage_in_workflow_view_model.dart';
+import 'package:work_flow/viewmodels/workflow_view_model/load_workflow_client_view_model.dart';
+import 'package:work_flow/viewmodels/workflow_view_model/load_workflow_id_view_model.dart';
 import 'package:work_flow/views/message_push_notification/globalkey.dart';
 import 'package:work_flow/views/message_push_notification/noti_service.dart';
 import 'package:work_flow/views/mybottomnavigationbar_view/mybottomnavigationbar_view.dart';
-import 'package:work_flow/views/screens/jobs/info_job.dart';
+import 'package:work_flow/views/jobs_view/info_job.dart';
 import 'package:work_flow/views/splash_creen_view/splash_creen_word_group_1_view.dart';
 
 @pragma('vm:entry-point')
@@ -134,6 +140,16 @@ class _MyAppState extends State<MyApp> {
             create: (context) => CreateWorkflowInGroupViewModel()),
         ChangeNotifierProvider(
             create: (context) => LoadListGroupCreateWorkflowViewModel()),
+        ChangeNotifierProvider(create: (context) => LoadWorkflowIdViewModel()),
+        ChangeNotifierProvider(
+            create: (context) => LoadStageInWorkflowViewModel()),
+        ChangeNotifierProvider(
+            create: (context) => LoadWorkflowClientViewModel()),
+        ChangeNotifierProvider(create: (context) => InfoStageViewModel()),
+        ChangeNotifierProvider(
+            create: (context) => FecthNameWorkflowViewModel()),
+        ChangeNotifierProvider(
+            create: (context) => CreateStageClientViewModel()),
         //theme
         ChangeNotifierProvider(create: (_) => ThemeViewModel()),
       ],

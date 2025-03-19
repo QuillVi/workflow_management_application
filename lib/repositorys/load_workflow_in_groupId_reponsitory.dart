@@ -4,12 +4,12 @@ class LoadWorkflowInGroupidReponsitory {
   final ApiLoadWorkflowInGroupId apiLoadWorkflowInGroupId =
       ApiLoadWorkflowInGroupId();
 
-  Future<List<String>?> getWorkflowsByGroupId(int groupId) async {
+  Future<List<dynamic>> getWorkflowsByGroupId(int groupId) async {
     try {
-      return await apiLoadWorkflowInGroupId.loadWorkflows(groupId);
+      return await apiLoadWorkflowInGroupId.fetchWorkflowsByGroupId(groupId);
     } catch (e) {
-      print('❌ Lỗi khi lấy dữ liệu workflows của nhóm: $e');
-      return null;
+      print("❌ Lỗi trong Repository: $e");
+      throw Exception("Không thể tải danh sách workflow");
     }
   }
 }

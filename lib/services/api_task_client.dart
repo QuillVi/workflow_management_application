@@ -8,34 +8,36 @@ class ApiTaskClient {
   Future loadTasks() async {
     String? token = await tokenClient.getToken();
     String? refreshToken = await tokenClient.getRefreshToken();
+    int? userId = await tokenClient.getIDUser();
 
-    if (token == null || refreshToken == null) {
-      print('Token hoặc refreshToken không tồn tại');
+    if (token == null || refreshToken == null || userId == null) {
+      print('Token, refreshToken hoặc IDUser không tồn tại');
       return;
     }
 
     try {
-      final response = await resFullApi.httpGet("/job/getAll", headers: {
-        'Authorization': 'Bearer $token',
-      });
+      final response = await resFullApi.httpGet(
+        "/job/getJobByIDUser/$userId",
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
 
-      return response; // Trả về danh sách công việc
+      return response;
     } catch (e) {
       if (e.toString().contains("401")) {
         print('Access Token hết hạn. Gọi API refreshToken...');
 
-        // Gọi API refresh token
-        final refreshResponse =
-            await resFullApi.httpPost("/common/refreshToken", {
-          'refreshToken': refreshToken,
-        });
+        final refreshResponse = await resFullApi.httpPost(
+          "/common/refreshToken",
+          {'refreshToken': refreshToken},
+        );
 
         if (refreshResponse != null &&
             refreshResponse.containsKey('accessToken')) {
           await tokenClient.updateToken(refreshResponse['accessToken']);
           print('Access Token mới đã được cập nhật.');
 
-          // Gọi lại API sau khi cập nhật token
           return await loadTasks();
         } else {
           print('API refreshToken không trả về accessToken.');

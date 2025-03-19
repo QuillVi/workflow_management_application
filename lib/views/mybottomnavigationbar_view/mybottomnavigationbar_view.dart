@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:work_flow/themes/primarycolor.dart';
-import 'package:work_flow/views/screens/tasks/my_task_dash_board.dart';
+import 'package:work_flow/views/tasks_view/my_task_dash_board.dart';
 import 'package:work_flow/views/category_view/category_view.dart';
 import 'package:work_flow/views/dashboard_view/dashboard_view.dart';
-import 'package:work_flow/views/screens/notify_screens/notification.dart';
+import 'package:work_flow/views/notify_screens_view/notify_screens_view.dart';
 import 'package:work_flow/views/profile_view/profile_view.dart';
 
 class Mybottomnavigationbar extends StatefulWidget {

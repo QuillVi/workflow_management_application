@@ -5,15 +5,19 @@ class ApiLoadWorkflowInGroupId {
   final RestfulApi restfulApi = RestfulApi();
   final Tokenclient tokenclient = Tokenclient();
 
-  Future<List<String>?> loadWorkflows(int groupId) async {
-    String? token = await tokenclient.getToken();
-
-    if (token == null) {
-      print('❌ Không tìm thấy Access Token');
-      return null;
-    }
-
+  Future<List<dynamic>> fetchWorkflowsByGroupId(int groupId) async {
     try {
+      String? token = await tokenClient.getToken();
+
+      if (token == null) {
+        print("❌ Token không tồn tại, thử làm mới...");
+        bool refreshed = await tokenClient.refreshAccessToken();
+        if (!refreshed) {
+          throw Exception("Làm mới token thất bại. Vui lòng đăng nhập lại.");
+        }
+        token = await tokenClient.getToken();
+      }
+
       final response = await restfulApi.httpGet(
         "/userWorkFlow/getByGroupID/$groupId",
         headers: {
@@ -22,18 +26,13 @@ class ApiLoadWorkflowInGroupId {
         },
       );
 
-      print(
-          "📌 Phản hồi từ API /userWorkFlow/getByGroupID/$groupId: $response");
-
-      if (response != null && response is List) {
-        return response.map((item) => item['Name'] as String).toList();
+      if (response is List) {
+        return response;
       } else {
-        print("⚠️ API không trả về danh sách workflows hợp lệ.");
+        throw Exception("Dữ liệu trả về không hợp lệ");
       }
     } catch (e) {
-      print('🔴 Lỗi khi tải workflows: $e');
+      throw Exception("Lỗi khi lấy danh sách workflow: $e");
     }
-
-    return null;
   }
 }

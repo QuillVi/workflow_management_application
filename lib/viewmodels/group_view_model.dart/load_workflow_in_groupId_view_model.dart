@@ -5,33 +5,24 @@ class LoadWorkflowInGroupidViewModel extends ChangeNotifier {
   final LoadWorkflowInGroupidReponsitory loadWorkflowInGroupidReponsitory =
       LoadWorkflowInGroupidReponsitory();
 
+  List<dynamic> _workflows = [];
   bool _isLoading = false;
-  bool _hasWorkflows = false;
-  List<String> _workflowNames = [];
+  String? _errorMessage;
 
+  List<dynamic> get workflows => _workflows;
   bool get isLoading => _isLoading;
-  bool get hasWorkflows => _hasWorkflows;
-  List<String> get workflowNames => _workflowNames;
+  String? get errorMessage => _errorMessage;
 
-  Future<void> fetchWorkflowsByGroupId(int groupId) async {
+  Future<void> fetchWorkflows(int groupId) async {
     _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
 
     try {
-      final fetchedWorkflows =
+      _workflows =
           await loadWorkflowInGroupidReponsitory.getWorkflowsByGroupId(groupId);
-
-      if (fetchedWorkflows != null && fetchedWorkflows.isNotEmpty) {
-        _workflowNames = fetchedWorkflows;
-        _hasWorkflows = true;
-      } else {
-        _workflowNames = [];
-        _hasWorkflows = false;
-      }
     } catch (e) {
-      print('❌ Lỗi khi tải workflows: $e');
-      _workflowNames = [];
-      _hasWorkflows = false;
+      _errorMessage = e.toString();
     }
 
     _isLoading = false;

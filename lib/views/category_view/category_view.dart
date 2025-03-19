@@ -4,8 +4,8 @@ import 'package:work_flow/themes/primarycolor.dart';
 import 'package:work_flow/viewmodels/caterory_view_model/fecth_job_done_view_model.dart';
 import 'package:work_flow/viewmodels/caterory_view_model/fecth_job_todo_view_model.dart';
 import 'package:work_flow/viewmodels/caterory_view_model/fecth_total_job_receiced_view_model.dart';
-import 'package:work_flow/views/screens/jobs/category_view_jobs/category_view_job_done.dart';
-import 'package:work_flow/views/screens/jobs/category_view_jobs/category_view_job_todo.dart';
+import 'package:work_flow/views/jobs_view/category_view_jobs/category_view_job_done.dart';
+import 'package:work_flow/views/jobs_view/category_view_jobs/category_view_job_todo.dart';
 
 class CategoryBoard extends StatefulWidget {
   const CategoryBoard({super.key});

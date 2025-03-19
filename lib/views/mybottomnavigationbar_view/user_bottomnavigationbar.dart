@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:work_flow/themes/primarycolor.dart';
 import 'package:work_flow/views/category_view/category_view.dart';
 import 'package:work_flow/views/dashboard_view/dashboard_view.dart';
-import 'package:work_flow/views/screens/notify_screens/notification.dart';
+import 'package:work_flow/views/notify_screens_view/notify_screens_view.dart';
 import 'package:work_flow/views/profile_view/profile_view.dart';
-import 'package:work_flow/views/screens/tasks/user_task_dashboard.dart';
+import 'package:work_flow/views/tasks_view/user_task_dashboard.dart';
 
 class UserBottomNavigationBar extends StatefulWidget {
   const UserBottomNavigationBar({super.key});

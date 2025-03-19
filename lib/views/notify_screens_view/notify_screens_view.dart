@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 import 'package:work_flow/api_constants.dart';
-import 'package:work_flow/views/screens/jobs/info_job.dart';
+import 'package:work_flow/views/jobs_view/info_job.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});

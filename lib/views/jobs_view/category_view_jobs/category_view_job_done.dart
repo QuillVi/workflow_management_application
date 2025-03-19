@@ -19,7 +19,6 @@ class _CategoryViewJobDoneState extends State<CategoryViewJobDone> {
 
   Future<List<Map<String, dynamic>>> fetchTotalJobsDone() async {
     try {
-      // Lấy token và IDUser từ SharedPreferences
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('token');
       final idUser = prefs.getInt('IDUser');

@@ -6,8 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:work_flow/api_constants.dart';
 import 'package:work_flow/themes/primarycolor.dart';
 import 'package:work_flow/views/group_view/group_view_model.dart';
-import 'package:work_flow/views/screens/jobs/info_job.dart';
-import 'package:work_flow/views/screens/workflows/workflow.dart';
+import 'package:work_flow/views/jobs_view/info_job.dart';
+import 'package:work_flow/views/workflows_view/workflow_view.dart';
 import 'package:http/http.dart' as http;
 
 class UserTaskDashboard extends StatefulWidget {

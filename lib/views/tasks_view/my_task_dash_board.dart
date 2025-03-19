@@ -6,9 +6,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:work_flow/api_constants.dart';
 import 'package:work_flow/themes/primarycolor.dart';
 import 'package:work_flow/views/group_view/group_view_model.dart';
-import 'package:work_flow/views/screens/jobs/info_job.dart';
-import 'package:work_flow/views/screens/tasks/create_task.dart';
-import 'package:work_flow/views/screens/workflows/workflow.dart';
+import 'package:work_flow/views/jobs_view/info_job.dart';
+import 'package:work_flow/views/tasks_view/create_task.dart';
+import 'package:work_flow/views/workflows_view/workflow_view.dart';
 import 'package:http/http.dart' as http;
 
 class MyTaskDashBoard extends StatefulWidget {
@@ -54,11 +54,14 @@ class _MyTaskDashBoardState extends State<MyTaskDashBoard>
       {String selectedTime = 'day', String selectedStatus = 'to-do'}) async {
     final token = await _getToken();
     final refreshToken = await _getRefreshToken();
+    final pref = await SharedPreferences.getInstance();
+    final int? userId = pref.getInt('IDUser');
 
-    if (token != null) {
+    if (token != null && userId != null) {
       String url =
-          '$baseUrl/job/getJobsToTimeAndStatus/1?period=$selectedTime&status=$selectedStatus';
-      print("url fetchJob: ${url}");
+          '$baseUrl/job/getJobsToTimeAndStatus/$userId?period=$selectedTime&status=$selectedStatus';
+      print("url fetchJob: $url");
+
       final response = await http.get(
         Uri.parse(url),
         headers: {
@@ -86,7 +89,8 @@ class _MyTaskDashBoardState extends State<MyTaskDashBoard>
           if (refreshData.containsKey('accessToken')) {
             await _updateToken(refreshData['accessToken']);
             print('Access Token mới đã được cập nhật.');
-            return _fetchJobs(context);
+            return _fetchJobs(context,
+                selectedTime: selectedTime, selectedStatus: selectedStatus);
           } else {
             throw Exception('API refreshToken không trả về accessToken.');
           }
@@ -99,7 +103,7 @@ class _MyTaskDashBoardState extends State<MyTaskDashBoard>
             'Failed to fetch data. Status code: ${response.statusCode}');
       }
     } else {
-      print('Token không tồn tại. Đăng nhập lại...');
+      print('Token hoặc IDUser không tồn tại. Đăng nhập lại...');
     }
   }
 
@@ -107,10 +111,14 @@ class _MyTaskDashBoardState extends State<MyTaskDashBoard>
       {String selectedStatus = 'to-do'}) async {
     final token = await _getToken();
     final refreshToken = await _getRefreshToken();
+    final pref = await SharedPreferences.getInstance();
+    final int? userId = pref.getInt('IDUser');
 
-    if (token != null) {
-      String url = '$baseUrl/job/getAllJobsByUserId/1?status=$selectedStatus';
-      print("url fetchJob: ${url}");
+    if (token != null && userId != null) {
+      String url =
+          '$baseUrl/job/getAllJobsByUserId/$userId?status=$selectedStatus';
+      print("url fetchJob: $url");
+
       final response = await http.get(
         Uri.parse(url),
         headers: {
@@ -138,7 +146,7 @@ class _MyTaskDashBoardState extends State<MyTaskDashBoard>
           if (refreshData.containsKey('accessToken')) {
             await _updateToken(refreshData['accessToken']);
             print('Access Token mới đã được cập nhật.');
-            return _fetchJobsMy(context);
+            return _fetchJobsMy(context, selectedStatus: selectedStatus);
           } else {
             throw Exception('API refreshToken không trả về accessToken.');
           }
@@ -151,7 +159,7 @@ class _MyTaskDashBoardState extends State<MyTaskDashBoard>
             'Failed to fetch data. Status code: ${response.statusCode}');
       }
     } else {
-      print('Token không tồn tại. Đăng nhập lại...');
+      print('Token hoặc IDUser không tồn tại. Đăng nhập lại...');
     }
   }
 

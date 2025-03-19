@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:work_flow/viewmodels/group_view_model.dart/load_group_id_view_model.dart';
 import 'package:work_flow/viewmodels/group_view_model.dart/load_workflow_in_groupId_view_model.dart';
 import 'package:work_flow/views/group_view/create_workflow_in_group_view.dart';
-import 'package:work_flow/views/screens/workflows/info_workflow.dart';
+import 'package:work_flow/views/workflows_view/info_workflow_view.dart';
 
 class InfoGroup extends StatefulWidget {
   final dynamic groupId;
@@ -30,7 +30,7 @@ class _InfoGroupState extends State<InfoGroup> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context
           .read<LoadWorkflowInGroupidViewModel>()
-          .fetchWorkflowsByGroupId(widget.groupId);
+          .fetchWorkflows(widget.groupId);
     });
   }
 
@@ -94,67 +94,78 @@ class _InfoGroupState extends State<InfoGroup> {
             return const Center(child: CircularProgressIndicator());
           }
 
-          return Column(
-            children: [
-              Expanded(
-                child: viewModel.hasWorkflows
-                    ? ListView.builder(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 8),
-                        itemCount: viewModel.workflowNames.length,
-                        itemBuilder: (context, index) {
-                          final workflowName =
-                              viewModel.workflowNames[index].isNotEmpty
-                                  ? viewModel.workflowNames[index]
-                                  : 'No Name Workflow';
-
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
-                            child: Material(
-                              elevation: 2,
-                              borderRadius: BorderRadius.circular(12),
-                              child: ListTile(
-                                contentPadding: const EdgeInsets.symmetric(
-                                    vertical: 8, horizontal: 16),
-                                tileColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                title: Text(
-                                  workflowName,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                                trailing: const Icon(Icons.arrow_forward_ios,
-                                    size: 16, color: Colors.blueAccent),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => InfoCreateWorkflow(
-                                        workflowId: workflowName,
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          );
-                        },
-                      )
-                    : const Center(
-                        child: Text(
-                          'Không có workflow trong Group này, hãy tạo workflow',
-                          style: TextStyle(fontSize: 16, color: Colors.black54),
-                        ),
-                      ),
+          if (viewModel.errorMessage != null) {
+            return Center(
+              child: Text(
+                viewModel.errorMessage!,
+                style: const TextStyle(fontSize: 16, color: Colors.red),
+                textAlign: TextAlign.center,
               ),
-            ],
+            );
+          }
+
+          if (viewModel.workflows.isEmpty) {
+            return const Center(
+              child: Text(
+                'Không có workflow trong Group này, hãy tạo workflow',
+                style: TextStyle(fontSize: 16, color: Colors.black54),
+              ),
+            );
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            itemCount: viewModel.workflows.length,
+            itemBuilder: (context, index) {
+              final workflow = viewModel.workflows[index];
+
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Material(
+                  elevation: 2,
+                  borderRadius: BorderRadius.circular(12),
+                  child: ListTile(
+                    contentPadding:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    tileColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    title: Text(
+                      workflow["Name"].isNotEmpty
+                          ? workflow["Name"]
+                          : 'No Name Workflow',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    trailing: const Icon(Icons.arrow_forward_ios,
+                        size: 16, color: Colors.blueAccent),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => InfoCreateWorkflow(
+                            workflowId: workflow["IDWorkFlow"],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              );
+            },
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Provider.of<LoadWorkflowInGroupidViewModel>(context, listen: false)
+              .fetchWorkflows(widget.groupId);
+        },
+        child: const Icon(Icons.refresh),
       ),
     );
   }

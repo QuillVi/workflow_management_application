@@ -1,86 +1,105 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:work_flow/api_constants.dart';
-import 'package:work_flow/views/screens/jobs/create_job.dart';
-import 'package:work_flow/views/screens/jobs/info_job.dart';
-import 'package:work_flow/views/screens/tasks/create_task.dart';
+import 'package:work_flow/views/jobs_view/job_view.dart';
+import 'package:work_flow/views/projects_view/create_project.dart';
+import 'dart:convert';
+import 'info_project.dart';
 
-class Job extends StatefulWidget {
-  const Job({super.key});
+class Project extends StatefulWidget {
+  const Project({super.key});
 
   @override
-  State<Job> createState() => _JobState();
+  State<Project> createState() => _ProjectState();
 }
 
-class _JobState extends State<Job> {
+class _ProjectState extends State<Project> {
   bool _isEditing = false;
-  String _title = 'Tasks';
-  List _jobs = [];
+  String _title = 'Projects';
+  List _projects = [];
+  List _jobInProjects = [];
   bool _isLoading = true;
+  List<int> _projectIds = [];
 
-  Future<void> _loadJobs() async {
-    try {
-      // Lấy token từ SharedPreferences
-      final token = await _getToken();
+  Future<void> _loadProjects() async {
+    final token = await _getToken();
 
-      if (token == null) {
-        print('Token not found');
-        _showSnackBar('Token không tồn tại, vui lòng đăng nhập lại');
-        return;
-      }
-
-      // Gửi yêu cầu để lấy tất cả công việc
+    if (token != null) {
       final response = await http.get(
-        Uri.parse('$baseUrl/job/getAll'),
+        Uri.parse('$baseUrl/project/getAll'),
         headers: {
           'Authorization': 'Bearer $token',
         },
       );
 
       if (response.statusCode == 200) {
-        // Nếu mã trạng thái là 200, phân tích dữ liệu và cập nhật UI
         final jsonData = jsonDecode(response.body);
         setState(() {
-          _jobs = jsonData;
+          _projects = jsonData;
+
+          // _projectIds =
+          //     List<int>.from(jsonData.map((project) => project['IdProject']));
         });
       } else if (response.statusCode == 401) {
-        // Nếu mã trạng thái là 401, token hết hạn, thử làm mới token
-        print('Token hết hạn, đang làm mới token...');
+        // Token hết hạn, thử làm mới token và gửi lại yêu cầu
+        print('Token expired, refreshing...');
         final data = jsonDecode(response.body);
         if (data.containsKey('token')) {
-          // Lưu lại token mới
-          await _setToken(data['token']);
-          // Gọi lại hàm _loadJobs sau khi token đã được làm mới
-          _loadJobs();
+          await _setToken(data['token']); // Lưu lại token mới
+          _loadProjects(); // Thử lại sau khi có token mới
         } else {
-          _showSnackBar('Không thể làm mới token');
-          print("Không thể làm mới token.");
+          print('Failed to refresh token');
         }
       } else {
-        // Thông báo lỗi nếu mã trạng thái không phải 200 hoặc 401
-        print('Failed to load jobs, status code: ${response.statusCode}');
-        _showSnackBar('Lỗi khi tải công việc: ${response.statusCode}');
+        print('Failed to load projects: ${response.statusCode}');
       }
-    } catch (e) {
-      // Bắt lỗi nếu có sự cố trong quá trình lấy dữ liệu
-      print('Lỗi khi tải công việc: $e');
-      _showSnackBar('Lỗi xảy ra trong quá trình tải công việc.');
+    } else {
+      print('Token not found');
     }
   }
 
-  void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
-  }
+  // Future<void> _loadJobInProject() async {
+  //   setState(() {
+  //     _isLoading = true;
+  //   });
+  //   try {
+  //     final token = await _getToken();
+  //     final headers = {
+  //       'Content-Type': 'application/json; charset=UTF-8',
+  //       'Authorization': 'Bearer $token',
+  //     };
+  //     final response = await http.get(
+  //       Uri.parse('$baseUrl/project/getJobsInGroup/$_projectIds'),
+  //       headers: headers,
+  //     );
+
+  //     print(response.body);
+
+  //     if (response.statusCode == 200) {
+  //       final contentType = response.headers['content-type'];
+  //       if (contentType != null && contentType.contains('application/json')) {
+  //         final jsonData = jsonDecode(response.body);
+  //         setState(() {
+  //           _jobInProjects = jsonData;
+  //         });
+  //       }
+  //     } else {
+  //       print('Failed to load jobs in project');
+  //     }
+  //   } catch (e) {
+  //     print('Error loading jobs in project: $e');
+  //   } finally {
+  //     setState(() {
+  //       _isLoading = false;
+  //     });
+  //   }
+  // }
 
   @override
   void initState() {
     super.initState();
-    _loadJobs();
+    _loadProjects();
   }
 
   Future<String?> _getToken() async {
@@ -138,7 +157,32 @@ class _JobState extends State<Job> {
             ),
           ],
         ),
-        actions: [],
+        actions: [
+          Container(
+            child: PopupMenuButton(
+              icon: const Icon(Icons.more_vert, color: Colors.black),
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Tạo Jobs'),
+                      const Icon(Icons.table_chart_outlined),
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const Job(),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
       backgroundColor: Colors.white,
       body: Padding(
@@ -161,7 +205,7 @@ class _JobState extends State<Job> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => CreateTask(),
+                        builder: (context) => CreateProject(),
                       ),
                     );
                   },
@@ -173,7 +217,7 @@ class _JobState extends State<Job> {
                         width: 120,
                         height: 20,
                         child: Text(
-                          'Tạo Task',
+                          'Tạo Project',
                           textAlign: TextAlign.center,
                           style: TextStyle(color: Colors.black, fontSize: 12),
                         ),
@@ -198,7 +242,7 @@ class _JobState extends State<Job> {
                         width: 120,
                         height: 20,
                         child: Text(
-                          'Xoá Task',
+                          'Xoá Project',
                           textAlign: TextAlign.center,
                           style: TextStyle(color: Colors.black, fontSize: 12),
                         ),
@@ -210,20 +254,21 @@ class _JobState extends State<Job> {
             ),
             SizedBox(height: 16),
             Expanded(
-              child: _jobs.isNotEmpty
+              child: _projects.isNotEmpty
                   ? ListView.builder(
-                      itemCount: _jobs.length,
+                      itemCount: _projects.length,
                       itemBuilder: (context, index) {
-                        final job = _jobs[index];
-                        final jobName = job['NameJob'] ?? 'Không có tên dự án';
+                        final project = _projects[index];
+                        final projectName =
+                            project['NameProject'] ?? 'Không có tên dự án';
 
                         return GestureDetector(
                           onTap: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => InfoJob(
-                                  jobId: job['IDJob'] ?? '',
+                                builder: (context) => InfoProject(
+                                  projectId: project['IdProject'] ?? '',
                                 ),
                               ),
                             );
@@ -235,7 +280,7 @@ class _JobState extends State<Job> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    jobName,
+                                    projectName,
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,

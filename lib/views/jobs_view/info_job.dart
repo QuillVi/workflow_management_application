@@ -5,7 +5,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:work_flow/api_constants.dart';
-import 'package:work_flow/views/message_push_notification/noti_service.dart';
 
 class InfoJob extends StatefulWidget {
   final dynamic jobId;
@@ -33,11 +32,9 @@ class _InfoJobState extends State<InfoJob> {
 
   Future<void> _loadJobs(BuildContext context) async {
     try {
-      // Lấy token từ SharedPreferences
       final token = await _getToken();
       final refreshToken = await _getRefreshToken();
 
-      // Gửi yêu cầu để lấy thông tin công việc
       final response = await http.get(
         Uri.parse('$baseUrl/job/${widget.jobId}'),
         headers: {
@@ -46,7 +43,6 @@ class _InfoJobState extends State<InfoJob> {
       );
 
       if (response.statusCode == 200) {
-        // Nếu mã trạng thái là 200, phân tích dữ liệu và cập nhật UI
         final jsonData = jsonDecode(response.body);
         setState(() {
           job = Job.fromJson(jsonData);
@@ -185,7 +181,6 @@ class _InfoJobState extends State<InfoJob> {
 
   @override
   Widget build(BuildContext context) {
-    final String? jobId = ModalRoute.of(context)?.settings.arguments as String?;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
